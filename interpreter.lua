@@ -32,7 +32,8 @@ local digit = lpeg.R("09")
 local alphanum = alpha + digit
 
 local comment = "#" * (lpeg.P(1) - "\n")^0
-
+local block_comment = "#{" * (lpeg.P(1) - "#}") ^ 0 * "#}"
+local comments = block_comment + comment;
 
 local maxmatch = 0
 local space = lpeg.V"space"
@@ -93,7 +94,7 @@ local exp = lpeg.V"exp"
 local stat = lpeg.V"stat"
 local stats = lpeg.V"stats"
 local block = lpeg.V"block"
-
+ 
 grammar = lpeg.P{"prog",
   prog = space * stats * -1,
   stats = stat * (T";" * stats)^-1 / nodeSeq,
@@ -108,15 +109,14 @@ grammar = lpeg.P{"prog",
   term0 = lpeg.Ct(factor * (opP * factor)^0) / foldBin,
   term1 = lpeg.Ct(term0 * ((opR + opM) * term0)^0) / foldBin,
   term2 = lpeg.Ct(term1 * (opA * term1)^0) / foldBin,
-  exp = lpeg.Ct(term2 * ((opLessThen + opGreaterThen + opLessOrEqualThen + opGreaterOrEqualThen + opEqualThen + opNotEqualThen) * term2)^0) / foldBin,
+  exp = lpeg.Ct(term2 * (( opLessThen + opGreaterThen + opLessOrEqualThen + opGreaterOrEqualThen + opEqualThen + opNotEqualThen) * term2)^0) / foldBin,
 
-  space = (lpeg.S(" \t\n") + comment)^0
+  space = (lpeg.S(" \t\n") + comments)^0
             * lpeg.P(function (_,p)
-                       maxmatch = math.max(maxmatch, p);
+                       maxmatch = math.max(maxmatch, p)
                        return true
                      end)
 }
-
 
 local function syntaxError (input, max)
   io.stderr:write("syntax error\n")
