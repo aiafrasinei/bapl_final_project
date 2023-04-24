@@ -1,0 +1,4 @@
+#{ multi line
+    teest comment
+    another test #} 
+return 0
