@@ -80,31 +80,32 @@ local stat = lpeg.V"stat"
 local stats = lpeg.V"stats"
 local block = lpeg.V"block"
  
---(T";" * stats) + T";"
+local grammar_table = {"prog",
+prog = space * stats * -1,
+stats = stat * (T";" * stats)^-1 / utils.nodeSeq,
+block = T"{" * stats * T"}",
+stat = block
+     + Rw"if" * exp * block * (Rw"else" * block)^-1
+         / utils.node("if1", "cond", "th", "el")
+     + Rw"while" * exp * block / utils.node("while1", "cond", "body")
+     + ID * T"=" * exp / utils.node("assgn", "id", "exp")
+     + Rw"@" * exp / utils.node("print", "exp")
+     + Rw"return" * exp / utils.node("ret", "exp"),
+factor = numeral + T"(" * exp * T")" + var,
+term0 = lpeg.Ct(factor * (opP * factor)^0) / foldBin,
+term1 = lpeg.Ct(term0 * ((opR + opM) * term0)^0) / foldBin,
+term2 = lpeg.Ct(term1 * (opA * term1)^0) / foldBin,
+exp = lpeg.Ct(term2 * (( opLessThen + opGreaterThen + opLessOrEqualThen + opGreaterOrEqualThen + opEqualThen + opNotEqualThen) * term2)^0) / foldBin,
 
-grammar = lpeg.P{"prog",
-  prog = space * stats * -1,
-  stats = stat * (T";" * stats)^-1 / utils.nodeSeq,
-  block = T"{" * I("test2") * stats * T"}",
-  stat = block
-       + Rw"if" * exp * block * (Rw"else" * block)^-1
-           / utils.node("if1", "cond", "th", "el")
-       + Rw"while" * exp * block / utils.node("while1", "cond", "body")
-       + ID * T"=" * exp / utils.node("assgn", "id", "exp")
-       + Rw"@" * exp / utils.node("print", "exp")
-       + Rw"return" * exp / utils.node("ret", "exp"),
-  factor = numeral + T"(" * exp * T")" + var,
-  term0 = lpeg.Ct(factor * (opP * factor)^0) / foldBin,
-  term1 = lpeg.Ct(term0 * ((opR + opM) * term0)^0) / foldBin,
-  term2 = lpeg.Ct(term1 * (opA * term1)^0) / foldBin,
-  exp = lpeg.Ct(term2 * (( opLessThen + opGreaterThen + opLessOrEqualThen + opGreaterOrEqualThen + opEqualThen + opNotEqualThen) * term2)^0) / foldBin,
-
-  space = (lpeg.S(" \t\n") + comments)^0
-            * lpeg.P(function (_,p)
-                       maxmatch = math.max(maxmatch, p)
-                       return true
-                     end)
+space = (lpeg.S(" \t\n") + comments)^0
+          * lpeg.P(function (_,p)
+                     maxmatch = math.max(maxmatch, p)
+                     return true
+                   end)
 }
+
+local grammar = lpeg.P(grammar_table)
+local gram = require('pegdebug').trace(grammar_table)
 
 local function syntaxError (input, max)
   io.stderr:write("syntax error\n")
@@ -233,10 +234,14 @@ end
 
 
 local input = io.read("a")
+--print(lpeg.match(lpeg.P(gram), input))
+
 local ast = parse(input)
-print(pt.pt(ast))
+--print(pt.pt(ast))
+
 local code = compile(ast)
 --print(pt.pt(code))
+
 local stack = {}
 local mem = {}
 run(code, mem, stack)
