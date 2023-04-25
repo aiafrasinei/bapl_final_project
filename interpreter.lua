@@ -1,31 +1,16 @@
 
 local lpeg = require "lpeg"
 local pt = require "pt"
+local utils = require "utils"
+local Compiler = require "compiler"
 
-----------------------------------------------------
+
 local function I (msg)
   return lpeg.P(function () print(msg); return true end)
 end
 
-
-local function node (tag, ...)
-  local labels = table.pack(...)
-  local params = table.concat(labels, ", ")
-  local fields = string.gsub(params, "(%w+)", "%1 = %1")
-  local code = string.format(
-    "return function (%s) return {tag = '%s', %s} end",
-    params, tag, fields)
-  return assert(load(code))()
-end
-
-----------------------------------------------------
-local function nodeSeq (st1, st2)
-  if st2 == nil then
-    return st1
-  else
-    return {tag = "seq", st1 = st1, st2 = st2}
-  end
-end
+--- FRONTEND ---
+----------------
 
 local alpha = lpeg.R("AZ", "az")
 local digit = lpeg.R("09")
@@ -40,7 +25,7 @@ local space = lpeg.V"space"
 
 
 local numeral = lpeg.P("-")^0 * lpeg.R("09")^1 / tonumber /
-                     node("number", "val")  * space
+                     utils.node("number", "val")  * space
 
 local reserved = {"return", "if", "else", "while"}
 local excluded = lpeg.P(false)
@@ -50,7 +35,7 @@ end
 excluded = excluded * -alphanum
 
 local ID = (lpeg.C(alpha * alphanum^0) - excluded) * space
-local var = ID / node("variable", "var")
+local var = ID / utils.node("variable", "var")
 
 
 local function T (t)
@@ -97,14 +82,14 @@ local block = lpeg.V"block"
  
 grammar = lpeg.P{"prog",
   prog = space * stats * -1,
-  stats = stat * (T";" * stats)^-1 / nodeSeq,
+  stats = stat * (T";" * stats)^-1 / utils.nodeSeq,
   block = T"{" * stats * T";"^-1 * T"}",
   stat = block
        + Rw"if" * exp * block * (Rw"else" * block)^-1
-           / node("if1", "cond", "th", "el")
-       + Rw"while" * exp * block / node("while1", "cond", "body")
-       + ID * T"=" * exp / node("assgn", "id", "exp")
-       + Rw"return" * exp / node("ret", "exp"),
+           / utils.node("if1", "cond", "th", "el")
+       + Rw"while" * exp * block / utils.node("while1", "cond", "body")
+       + ID * T"=" * exp / utils.node("assgn", "id", "exp")
+       + Rw"return" * exp / utils.node("ret", "exp"),
   factor = numeral + T"(" * exp * T")" + var,
   term0 = lpeg.Ct(factor * (opP * factor)^0) / foldBin,
   term1 = lpeg.Ct(term0 * ((opR + opM) * term0)^0) / foldBin,
@@ -133,106 +118,8 @@ local function parse (input)
   return res
 end
 
-----------------------------------------------------
-local Compiler = { code = {}, vars = {}, nvars = 0 }
-
-function Compiler:addCode (op)
-  local code = self.code
-  code[#code + 1] = op
-end
-
-
-local ops = {["+"] = "add", ["-"] = "sub",
-             ["*"] = "mul", ["/"] = "div",
-             ["%"] = "mod", ["^"] = "pow",
-             ["<"] = "less_then", [">"] = "greater_then",
-             ["<="] = "less_or_equl_then", [">="] = "greater_or_equal_then",
-             ["=="] = "equal_then", ["!="] = "not_equal_then"}
-
-
-function Compiler:var2num (id)
-  local num = self.vars[id]
-  if not num then
-    num = self.nvars + 1
-    self.nvars = num
-    self.vars[id] = num
-  end
-  return num
-end
-
-
-function Compiler:currentPosition ()
-  return #self.code
-end
-
-
-function Compiler:codeJmpB (op, label)
-  self:addCode(op)
-  self:addCode(label)
-end
-
-
-function Compiler:codeJmpF (op)
-  self:addCode(op)
-  self:addCode(0)
-  return self:currentPosition()
-end
-
-
-function Compiler:fixJmp2here (jmp)
-  self.code[jmp] = self:currentPosition()
-end
-
-
-function Compiler:codeExp (ast)
-  if ast.tag == "number" then
-    self:addCode("push")
-    self:addCode(ast.val)
-  elseif ast.tag == "variable" then
-    self:addCode("load")
-    self:addCode(self:var2num(ast.var))
-  elseif ast.tag == "binop" then
-    self:codeExp(ast.e1)
-    self:codeExp(ast.e2)
-    self:addCode(ops[ast.op])
-  else error("invalid tree")
-  end
-end
-
-
-function Compiler:codeStat (ast)
-  if ast.tag == "assgn" then
-    self:codeExp(ast.exp)
-    self:addCode("store")
-    self:addCode(self:var2num(ast.id))
-  elseif ast.tag == "seq" then
-    self:codeStat(ast.st1)
-    self:codeStat(ast.st2)
-  elseif ast.tag == "ret" then
-    self:codeExp(ast.exp)
-    self:addCode("ret")
-  elseif ast.tag == "while1" then
-    local ilabel = self:currentPosition()
-    self:codeExp(ast.cond)
-    local jmp = self:codeJmpF("jmpZ")
-    self:codeStat(ast.body)
-    self:codeJmpB("jmp", ilabel)
-    self:fixJmp2here(jmp)
-  elseif ast.tag == "if1" then
-    self:codeExp(ast.cond)
-    local jmp = self:codeJmpF("jmpZ")
-    self:codeStat(ast.th)
-    if ast.el == nil then
-      self:fixJmp2here(jmp)
-    else
-      local jmp2 = self:codeJmpF("jmp")
-      self:fixJmp2here(jmp)
-      self:codeStat(ast.el)
-      self:fixJmp2here(jmp2)
-    end
-  else error("invalid tree")
-  end
-end
+--- COMPILER ---
+----------------
 
 local function compile (ast)
   Compiler:codeStat(ast)
@@ -242,7 +129,8 @@ local function compile (ast)
   return Compiler.code
 end
 
-----------------------------------------------------
+--- INTERPRETER ---
+-------------------
 
 local function run (code, mem, stack)
   local pc = 1
