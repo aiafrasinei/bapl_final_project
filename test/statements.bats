@@ -15,7 +15,7 @@ setup() {
     assert_output "0"
 }
 
-@test "print" {
-    run lua interpreter.lua < test/inputs/statements/print
-    assert_output "0"
+@test "print expresions" {
+    run lua interpreter.lua < test/inputs/statements/print_exp
+    assert_output --partial "4"
 }

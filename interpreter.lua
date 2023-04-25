@@ -27,7 +27,7 @@ local space = lpeg.V"space"
 local numeral = lpeg.P("-")^0 * lpeg.R("09")^1 / tonumber /
                      utils.node("number", "val")  * space
 
-local reserved = {"return", "if", "else", "while"}
+local reserved = {"return", "if", "else", "while", "@"}
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
   excluded = excluded + reserved[i]
@@ -80,15 +80,18 @@ local stat = lpeg.V"stat"
 local stats = lpeg.V"stats"
 local block = lpeg.V"block"
  
+--(T";" * stats) + T";"
+
 grammar = lpeg.P{"prog",
   prog = space * stats * -1,
   stats = stat * (T";" * stats)^-1 / utils.nodeSeq,
-  block = T"{" * stats * T";"^-1 * T"}",
+  block = T"{" * I("test2") * stats * T"}",
   stat = block
        + Rw"if" * exp * block * (Rw"else" * block)^-1
            / utils.node("if1", "cond", "th", "el")
        + Rw"while" * exp * block / utils.node("while1", "cond", "body")
        + ID * T"=" * exp / utils.node("assgn", "id", "exp")
+       + Rw"@" * exp / utils.node("print", "exp")
        + Rw"return" * exp / utils.node("ret", "exp"),
   factor = numeral + T"(" * exp * T")" + var,
   term0 = lpeg.Ct(factor * (opP * factor)^0) / foldBin,
@@ -144,6 +147,8 @@ local function run (code, mem, stack)
   --]]
     if code[pc] == "ret" then
       return
+    elseif code[pc] == "print" then
+      print(stack[top])
     elseif code[pc] == "push" then
       pc = pc + 1
       top = top + 1
@@ -229,7 +234,7 @@ end
 
 local input = io.read("a")
 local ast = parse(input)
---print(pt.pt(ast))
+print(pt.pt(ast))
 local code = compile(ast)
 --print(pt.pt(code))
 local stack = {}
