@@ -101,6 +101,9 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "print" then
     self:codeExp(ast.exp)
     self:addCode("print")
+  elseif ast.tag == "not" then
+    self:codeExp(ast.exp)
+    self:addCode("not")
   elseif ast.tag == "while1" then
     local ilabel = self:currentPosition()
     self:codeExp(ast.cond)

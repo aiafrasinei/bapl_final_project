@@ -10,22 +10,7 @@ setup() {
     PATH="$DIR/..:$PATH"
 }
 
-@test "empty statement" {
-    run lua interpreter.lua < test/inputs/statements/empty_block
-    assert_output "5"
-}
-
-@test "print expresions" {
-    run lua interpreter.lua < test/inputs/statements/print_exp
-    assert_output --partial "4"
-}
-
-@test "print array" {
-    run lua interpreter.lua < test/inputs/statements/print_array
-    assert_output --partial "[ 1 2 3 ]"
-}
-
-@test "not expresions" {
-    run lua interpreter.lua < test/inputs/statements/not
+@test "simple" {
+    run lua interpreter.lua < test/inputs/arrays/simple
     assert_output "1"
 }

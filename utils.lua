@@ -45,4 +45,12 @@ function utils.syntaxError(input, max)
     "|", string.sub(input, max, max + 11), "\n")
 end
 
+function utils.neg(nr)
+  if nr == 0 then
+    return 1
+  else
+    return 0
+  end
+end
+
 return utils

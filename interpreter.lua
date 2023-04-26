@@ -29,7 +29,7 @@ local space = lpeg.V "space"
 local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
     utils.node("number", "val") * space
 
-local reserved = { "return", "if", "else", "while", "new", "@" }
+local reserved = { "return", "if", "else", "elif", "while", "new", "@", "!" }
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
   excluded = excluded + reserved[i]
@@ -49,7 +49,6 @@ local function Rw(t)
   assert(excluded:match(t))
   return t * -alphanum * space
 end
-
 
 local opA = lpeg.C(lpeg.S "+-") * space
 local opM = lpeg.C(lpeg.S "*/") * space
@@ -78,11 +77,12 @@ local grammar_table = {
   stats = stat * (T ";" ^ 1 * stats) ^ -1 / utils.nodeSeq,
   block = T "{" * stats * T ";" ^ -1 * T "}",
   stat = block
-      + Rw("if") * exp * block * (Rw("else") * block) ^ -1
+      + Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 * (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
       + Rw("@") * exp / utils.node("print", "exp")
+      + Rw("!") * exp / utils.node("not", "exp")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
@@ -142,7 +142,16 @@ local function run(code, mem, stack)
     if code[pc] == "ret" then
       return
     elseif code[pc] == "print" then
-      print(stack[top])
+      if (type(stack[top] == "table")) then
+        io.write("[")
+        for i, v in ipairs(stack[top]) do
+          io.write(" ")
+          io.write(tostring(v))
+        end
+        io.write(" ]\n");
+      else
+        print(stack[top])
+      end
     elseif code[pc] == "push" then
       pc = pc + 1
       top = top + 1
@@ -201,6 +210,8 @@ local function run(code, mem, stack)
       end
       stack[top - 1] = comp_result
       top = top - 1
+    elseif code[pc] == "not" then
+      stack[top] = utils.neg(stack[top])
     elseif code[pc] == "load" then
       pc = pc + 1
       local id = code[pc]
