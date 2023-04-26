@@ -1,20 +1,27 @@
 local Compiler = { code = {}, vars = {}, nvars = 0 }
 
-function Compiler:addCode (op)
+function Compiler:addCode(op)
   local code = self.code
   code[#code + 1] = op
 end
 
+local ops = {
+  ["+"] = "add",
+  ["-"] = "sub",
+  ["*"] = "mul",
+  ["/"] = "div",
+  ["%"] = "mod",
+  ["^"] = "pow",
+  ["<"] = "less_then",
+  [">"] = "greater_then",
+  ["<="] = "less_or_equl_then",
+  [">="] = "greater_or_equal_then",
+  ["=="] = "equal_then",
+  ["!="] = "not_equal_then"
+}
 
-local ops = {["+"] = "add", ["-"] = "sub",
-             ["*"] = "mul", ["/"] = "div",
-             ["%"] = "mod", ["^"] = "pow",
-             ["<"] = "less_then", [">"] = "greater_then",
-             ["<="] = "less_or_equl_then", [">="] = "greater_or_equal_then",
-             ["=="] = "equal_then", ["!="] = "not_equal_then"}
 
-
-function Compiler:var2num (id)
+function Compiler:var2num(id)
   local num = self.vars[id]
   if not num then
     num = self.nvars + 1
@@ -24,51 +31,67 @@ function Compiler:var2num (id)
   return num
 end
 
-
-function Compiler:currentPosition ()
+function Compiler:currentPosition()
   return #self.code
 end
 
-
-function Compiler:codeJmpB (op, label)
+function Compiler:codeJmpB(op, label)
   self:addCode(op)
   self:addCode(label)
 end
 
-
-function Compiler:codeJmpF (op)
+function Compiler:codeJmpF(op)
   self:addCode(op)
   self:addCode(0)
   return self:currentPosition()
 end
 
-
-function Compiler:fixJmp2here (jmp)
+function Compiler:fixJmp2here(jmp)
   self.code[jmp] = self:currentPosition()
 end
 
-
-function Compiler:codeExp (ast)
+function Compiler:codeExp(ast)
   if ast.tag == "number" then
     self:addCode("push")
     self:addCode(ast.val)
   elseif ast.tag == "variable" then
     self:addCode("load")
     self:addCode(self:var2num(ast.var))
+  elseif ast.tag == "indexed" then
+    self:codeExp(ast.array)
+    self:codeExp(ast.index)
+    self:addCode("getarray")
+  elseif ast.tag == "new" then
+    self:codeExp(ast.size)
+    self:addCode("newarray")
   elseif ast.tag == "binop" then
     self:codeExp(ast.e1)
     self:codeExp(ast.e2)
     self:addCode(ops[ast.op])
-  else error("invalid tree")
+  else
+    error("invalid tree")
   end
 end
 
-
-function Compiler:codeStat (ast)
-  if ast.tag == "assgn" then
+function Compiler:codeAssgn(ast)
+  local lhs = ast.lhs
+  if lhs.tag == "variable" then
     self:codeExp(ast.exp)
     self:addCode("store")
-    self:addCode(self:var2num(ast.id))
+    self:addCode(self:var2num(lhs.var))
+  elseif lhs.tag == "indexed" then
+    self:codeExp(lhs.array)
+    self:codeExp(lhs.index)
+    self:codeExp(ast.exp)
+    self:addCode("setarray")
+  else
+    error("unkown tag")
+  end
+end
+
+function Compiler:codeStat(ast)
+  if ast.tag == "assgn" then
+    self:codeAssgn(ast)
   elseif ast.tag == "seq" then
     self:codeStat(ast.st1)
     self:codeStat(ast.st2)
@@ -97,7 +120,8 @@ function Compiler:codeStat (ast)
       self:codeStat(ast.el)
       self:fixJmp2here(jmp2)
     end
-  else error("invalid tree")
+  else
+    error("invalid tree")
   end
 end
 
