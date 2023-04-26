@@ -12,7 +12,7 @@ setup() {
 
 @test "empty statement" {
     run lua interpreter.lua < test/inputs/statements/empty_block
-    assert_output "0"
+    assert_output "5"
 }
 
 @test "print expresions" {

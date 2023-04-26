@@ -94,16 +94,17 @@ local block = lpeg.V "block"
 local grammar_table = {
   "prog",
   prog = space * stats * -1,
-  stats = stat * (T ";" * stats) ^ -1 / utils.nodeSeq,
+  stats = stat * (T ";" ^ 1 * stats) ^ -1 / utils.nodeSeq,
   block = T "{" * stats * T ";" ^ -1 * T "}",
   stat = block
-      + Rw "if" * exp * block * (Rw "else" * block) ^ -1
+      + Rw("if") * exp * block * (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
-      + Rw "while" * exp * block / utils.node("while1", "cond", "body")
+      + Rw("while") * exp * block / utils.node("while1", "cond", "body")
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
-      + Rw "return" * exp / utils.node("ret", "exp"),
+      + Rw("@") * exp / utils.node("print", "exp")
+      + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / foldIndex,
-  factor = Rw "new" * T "[" * exp * T "]" / utils.node("new", "size")
+  factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
       + T "(" * exp * T ")"
       + lhs,
