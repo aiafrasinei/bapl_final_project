@@ -1,0 +1,10 @@
+a = 3;
+b = 2;
+
+if a < b {
+    b = 11;
+} else {
+    b = 12; 
+};
+
+return b

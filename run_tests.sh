@@ -6,3 +6,4 @@
 ./test/bats/bin/bats test/precedence.bats
 ./test/bats/bin/bats test/comments.bats
 ./test/bats/bin/bats test/statements.bats
+./test/bats/bin/bats test/control_structs.bats

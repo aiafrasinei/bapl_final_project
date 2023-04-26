@@ -62,25 +62,6 @@ local opGreaterOrEqualThen = lpeg.C(lpeg.P ">=") * space
 local opEqualThen = lpeg.C(lpeg.P "==") * space
 local opNotEqualThen = lpeg.C(lpeg.P "!=") * space
 
-
--- Convert a list {n1, "+", n2, "+", n3, ...} into a tree
--- {...{ op = "+", e1 = {op = "+", e1 = n1, n2 = n2}, e2 = n3}...}
-local function foldBin(lst)
-  local tree = lst[1]
-  for i = 2, #lst, 2 do
-    tree = { tag = "binop", e1 = tree, op = lst[i], e2 = lst[i + 1] }
-  end
-  return tree
-end
-
-local function foldIndex(lst)
-  local tree = lst[1]
-  for i = 2, #lst do
-    tree = { tag = "indexed", array = tree, index = lst[i] }
-  end
-  return tree
-end
-
 local lhs = lpeg.V "lhs"
 local factor = lpeg.V "factor"
 local term0 = lpeg.V "term0"
@@ -103,18 +84,18 @@ local grammar_table = {
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
       + Rw("@") * exp / utils.node("print", "exp")
       + Rw("return") * exp / utils.node("ret", "exp"),
-  lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / foldIndex,
+  lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
       + T "(" * exp * T ")"
       + lhs,
-  term0 = lpeg.Ct(factor * (opP * factor) ^ 0) / foldBin,
-  term1 = lpeg.Ct(term0 * ((opR + opM) * term0) ^ 0) / foldBin,
-  term2 = lpeg.Ct(term1 * (opA * term1) ^ 0) / foldBin,
+  term0 = lpeg.Ct(factor * (opP * factor) ^ 0) / utils.foldBin,
+  term1 = lpeg.Ct(term0 * ((opR + opM) * term0) ^ 0) / utils.foldBin,
+  term2 = lpeg.Ct(term1 * (opA * term1) ^ 0) / utils.foldBin,
   exp = lpeg.Ct(term2 *
         ((opLessThen + opGreaterThen + opLessOrEqualThen + opGreaterOrEqualThen + opEqualThen + opNotEqualThen) * term2) ^
         0) /
-      foldBin,
+      utils.foldBin,
   space = (lpeg.S(" \t\n") + comments) ^ 0
       * lpeg.P(function(_, p)
         maxmatch = math.max(maxmatch, p)
@@ -125,16 +106,10 @@ local grammar_table = {
 local grammar = lpeg.P(grammar_table)
 local gram = require('pegdebug').trace(grammar_table)
 
-local function syntaxError(input, max)
-  io.stderr:write("syntax error\n")
-  io.stderr:write(string.sub(input, max - 10, max - 1),
-    "|", string.sub(input, max, max + 11), "\n")
-end
-
 local function parse(input)
   local res = grammar:match(input)
   if (not res) then
-    syntaxError(input, maxmatch)
+    utils.syntaxError(input, maxmatch)
     os.exit(1)
   end
   return res
