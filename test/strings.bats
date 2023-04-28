@@ -10,12 +10,7 @@ setup() {
     PATH="$DIR/..:$PATH"
 }
 
-@test "simple" {
-    run lua interpreter.lua < test/inputs/arrays/simple
-    assert_output "1"
-}
-
-@test "multi" {
-    run lua interpreter.lua < test/inputs/arrays/multi
-    assert_output "38"
+@test "simple string" {
+    run lua interpreter.lua < test/inputs/strings/simple
+    assert_output "temp"
 }

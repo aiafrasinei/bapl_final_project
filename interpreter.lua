@@ -2,6 +2,7 @@ local lpeg = require "lpeg"
 local pt = require "pt"
 local utils = require "utils"
 local Compiler = require "compiler"
+require "stackapi"
 
 
 local function I(msg)
@@ -14,6 +15,8 @@ end
 --- FRONTEND ---
 ----------------
 
+local DEBUG = false
+
 local alpha = lpeg.R("AZ", "az")
 local digit = lpeg.R("09")
 local alphanum = alpha + digit
@@ -23,13 +26,17 @@ local block_comment = "#{" * (lpeg.P(1) - "#}") ^ 0 * "#}"
 local comments = block_comment + comment;
 
 local maxmatch = 0
+local err_line_nr = 1
 local space = lpeg.V "space"
 
 
 local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
     utils.node("number", "val") * space
+local text = alpha ^ 1 / utils.node("text", "val") * space
 
-local reserved = { "return", "if", "else", "elif", "while", "new", "@", "!" }
+local reserved = { "return", "if", "else", "elif", "while", "new", "@", "!",
+  "PUSH", "POP", "DEPTH", "DROP", "PRINT", "PEEK", "USE" }
+
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
   excluded = excluded + reserved[i]
@@ -43,7 +50,6 @@ local var = ID / utils.node("variable", "var")
 local function T(t)
   return t * space
 end
-
 
 local function Rw(t)
   assert(excluded:match(t))
@@ -83,10 +89,18 @@ local grammar_table = {
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
       + Rw("@") * exp / utils.node("print", "exp")
       + Rw("!") * exp / utils.node("not", "exp")
+      + Rw("PUSH") * exp / utils.node("spush", "exp")
+      + Rw("POP") / utils.node("spop")
+      + Rw("DEPTH") / utils.node("sdepth")
+      + Rw("DROP") / utils.node("sdrop")
+      + Rw("PRINT") / utils.node("sprint")
+      + Rw("PEEK") * exp / utils.node("speek", "exp")
+      + Rw("USE") * exp / utils.node("suse", "exp")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
+      + T "\"" * text * T "\""
       + T "(" * exp * T ")"
       + lhs,
   term0 = lpeg.Ct(factor * (opP * factor) ^ 0) / utils.foldBin,
@@ -97,8 +111,10 @@ local grammar_table = {
         0) /
       utils.foldBin,
   space = (lpeg.S(" \t\n") + comments) ^ 0
-      * lpeg.P(function(_, p)
+      * lpeg.P(function(a, p)
         maxmatch = math.max(maxmatch, p)
+        err_line_nr = utils.get_err_line(a, p, err_line_nr);
+
         return true
       end)
 }
@@ -109,7 +125,7 @@ local gram = require('pegdebug').trace(grammar_table)
 local function parse(input)
   local res = grammar:match(input)
   if (not res) then
-    utils.syntaxError(input, maxmatch)
+    utils.syntaxError(input, maxmatch, err_line_nr)
     os.exit(1)
   end
   return res
@@ -129,7 +145,7 @@ end
 --- INTERPRETER ---
 -------------------
 
-local function run(code, mem, stack)
+local function run(code, mem, stack, sapi)
   local pc = 1
   local top = 0
   while true do
@@ -142,7 +158,7 @@ local function run(code, mem, stack)
     if code[pc] == "ret" then
       return
     elseif code[pc] == "print" then
-      if (type(stack[top] == "table")) then
+      if (type(stack[top]) == "table") then
         io.write("[")
         for i, v in ipairs(stack[top]) do
           io.write(" ")
@@ -244,6 +260,23 @@ local function run(code, mem, stack)
         pc = code[pc]
       end
       top = top - 1
+    elseif code[pc] == "spush" then
+      sapi:getStack(current_stack):push(stack[top])
+    elseif code[pc] == "spop" then
+      sapi:getStack(current_stack):pop()
+    elseif code[pc] == "sdepth" then
+      sapi:getStack(current_stack):push(sapi:getStack(current_stack):depth())
+    elseif code[pc] == "sprint" then
+      print(sapi:getStack(current_stack):printData())
+    elseif code[pc] == "speek" then
+      print(sapi:getStack(current_stack):peek(tonumber(stack[top])))
+    elseif code[pc] == "sdrop" then
+      sapi:getStack(current_stack):clear()
+    elseif code[pc] == "suse" then
+      current_stack = stack[top]
+      if DEBUG then
+        print("current_stack: " .. current_stack)
+      end
     else
       error("unknown instruction")
     end
@@ -252,16 +285,25 @@ local function run(code, mem, stack)
 end
 
 
+local sapi = StackApi:new()
+current_stack = "default";
+
 local input = io.read("a")
---print(lpeg.match(lpeg.P(gram), input))
+if DEBUG then
+  print(lpeg.match(lpeg.P(gram), input))
+end
 
 local ast = parse(input)
---print(pt.pt(ast))
+if DEBUG then
+  print(pt.pt(ast))
+end
 
 local code = compile(ast)
---print(pt.pt(code))
+if DEBUG then
+  print(pt.pt(code))
+end
 
 local stack = {}
 local mem = {}
-run(code, mem, stack)
+run(code, mem, stack, sapi)
 print(stack[1])

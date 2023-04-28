@@ -3,6 +3,18 @@
 Final Project Report: [Project Name]
 Language Syntax
 
+Interpreter has access to any number of stacks using stackapi.
+2 stacks are created by default: ("default" and "temp").
+Initial selected stack is the default.
+Stacks can be selected using USE operation ( USE "temp"; ).
+
+Standard stack operations:
+PUSH exp, POP, DEPTH, DROP, PRINT, PEEK nr
+Additional stack operations:
+DUP, OVER, SWAP
+Stack Api operations:
+ADD , RM , CLEAR, REPLACE, USE
+
 In this section, describe the overall syntax of your language.
 New Features/Changes
 

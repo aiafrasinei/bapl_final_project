@@ -39,10 +39,9 @@ function utils.nodeSeq(st1, st2)
   end
 end
 
-function utils.syntaxError(input, max)
-  io.stderr:write("syntax error\n")
-  io.stderr:write(string.sub(input, max - 10, max - 1),
-    "|", string.sub(input, max, max + 11), "\n")
+function utils.syntaxError(input, max, err_line_nr)
+  io.stderr:write("syntax error (line " .. err_line_nr .. ") : \n")
+  io.stderr:write(string.sub(input, max, string.find(input, "\n", max, true)), "\n")
 end
 
 function utils.neg(nr)
@@ -51,6 +50,35 @@ function utils.neg(nr)
   else
     return 0
   end
+end
+
+function utils.get_err_line(a, p, err_line_index)
+  local ret = 1
+  local once = true
+  local eoli = {}
+
+  if once then
+    while (true)
+    do
+      ret, _ = string.find(a, "\n", ret + 1, true)
+      eoli[#eoli + 1] = ret
+      if ret == nil then
+        break
+      end
+    end
+    once = false
+  end
+
+  if string.sub(a, p, p) == ";" then
+    for i = 1, #eoli do
+      ret, _ = string.find(a, "\n", p, true)
+      if eoli[i] == ret then
+        err_line_index = i;
+      end
+    end
+  end
+
+  return err_line_index
 end
 
 return utils

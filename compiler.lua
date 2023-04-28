@@ -1,3 +1,5 @@
+local pt = require "pt"
+
 local Compiler = { code = {}, vars = {}, nvars = 0 }
 
 function Compiler:addCode(op)
@@ -54,9 +56,17 @@ function Compiler:codeExp(ast)
   if ast.tag == "number" then
     self:addCode("push")
     self:addCode(ast.val)
+  elseif ast.tag == "text" then
+    self:addCode("push")
+    self:addCode(ast.val)
   elseif ast.tag == "variable" then
     self:addCode("load")
+    --ALEX TODO
+    --if ast.val == nil then
+    --  self:addCode(ast.var)
+    --else
     self:addCode(self:var2num(ast.var))
+    --end
   elseif ast.tag == "indexed" then
     self:codeExp(ast.array)
     self:codeExp(ast.index)
@@ -76,6 +86,7 @@ end
 function Compiler:codeAssgn(ast)
   local lhs = ast.lhs
   if lhs.tag == "variable" then
+    -- ALEX TODO
     self:codeExp(ast.exp)
     self:addCode("store")
     self:addCode(self:var2num(lhs.var))
@@ -101,9 +112,26 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "print" then
     self:codeExp(ast.exp)
     self:addCode("print")
+  elseif ast.tag == "spush" then
+    self:codeExp(ast.exp)
+    self:addCode("spush")
+  elseif ast.tag == "spop" then
+    self:addCode("spop")
+  elseif ast.tag == "sdepth" then
+    self:addCode("sdepth")
+  elseif ast.tag == "sprint" then
+    self:addCode("sprint")
+  elseif ast.tag == "speek" then
+    self:codeExp(ast.exp)
+    self:addCode("speek")
+  elseif ast.tag == "sdrop" then
+    self:addCode("sdrop")
   elseif ast.tag == "not" then
     self:codeExp(ast.exp)
     self:addCode("not")
+  elseif ast.tag == "suse" then
+    self:codeExp(ast.exp)
+    self:addCode("suse")
   elseif ast.tag == "while1" then
     local ilabel = self:currentPosition()
     self:codeExp(ast.cond)
