@@ -86,9 +86,12 @@ local grammar_table = {
       / utils.node("function", "name", "body"),
 
   stats = stat * (T ";" ^ 1 * stats) ^ -1 / utils.nodeSeq,
-  block = T "{" * stats * T ";" ^ -1 * T "}" / utils.node("block", "body"),
+  block = T "{" * stats * T ";" ^ -1 * T "}" /
+      utils.node("block", "body"),
   stat = block
-      + Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 * (Rw("else") * block) ^ -1
+      +
+      Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 *
+      (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
       + call
