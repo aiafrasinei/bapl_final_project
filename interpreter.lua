@@ -60,12 +60,12 @@ local opA = lpeg.C(lpeg.S "+-") * space
 local opM = lpeg.C(lpeg.S "*/") * space
 local opR = lpeg.C(lpeg.S "%") * space
 local opP = lpeg.C(lpeg.S "^") * space
-local opLessThen = lpeg.C(lpeg.S "<") * space
-local opGreaterThen = lpeg.C(lpeg.S ">") * space
-local opLessOrEqualThen = lpeg.C(lpeg.P "<=") * space
-local opGreaterOrEqualThen = lpeg.C(lpeg.P ">=") * space
-local opEqualThen = lpeg.C(lpeg.P "==") * space
-local opNotEqualThen = lpeg.C(lpeg.P "!=") * space
+local opLessThen = lpeg.C(lpeg.P "lt") * space
+local opGreaterThen = lpeg.C(lpeg.P "gt") * space
+local opLessOrEqualThen = lpeg.C(lpeg.P "le") * space
+local opGreaterOrEqualThen = lpeg.C(lpeg.P "ge") * space
+local opEqualThen = lpeg.C(lpeg.P "eq") * space
+local opNotEqualThen = lpeg.C(lpeg.P "ne") * space
 
 local lhs = lpeg.V "lhs"
 local call = lpeg.V "call"

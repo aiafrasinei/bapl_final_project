@@ -14,12 +14,12 @@ local ops = {
   ["/"] = "div",
   ["%"] = "mod",
   ["^"] = "pow",
-  ["<"] = "less_then",
-  [">"] = "greater_then",
-  ["<="] = "less_or_equl_then",
-  [">="] = "greater_or_equal_then",
-  ["=="] = "equal_then",
-  ["!="] = "not_equal_then"
+  ["lt"] = "less_then",
+  ["gt"] = "greater_then",
+  ["le"] = "less_or_equal_then",
+  ["ge"] = "greater_or_equal_then",
+  ["eq"] = "equal_then",
+  ["ne"] = "not_equal_then"
 }
 
 

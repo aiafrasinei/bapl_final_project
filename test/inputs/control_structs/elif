@@ -2,9 +2,9 @@ function main () {
     a = 5;
     b = 4;
 
-    if a < b {
+    if a lt b {
         b = 1;
-    } elif a > b {
+    } elif a gt b {
         b = 2;
     } else {
         b = 3; 

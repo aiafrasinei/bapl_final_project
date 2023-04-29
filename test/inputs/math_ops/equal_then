@@ -1,4 +1,4 @@
 function main () {
-    a = 2 == 2;
+    a = 2 eq 2;
     return a
 }

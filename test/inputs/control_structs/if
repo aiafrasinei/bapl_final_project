@@ -2,7 +2,7 @@ function main () {
     a = 2;
     b = 3;
 
-    if a < b {
+    if a lt b {
         b = 12;
     };
 
