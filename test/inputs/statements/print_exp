@@ -1,2 +1,4 @@
-@ 2 + 2;
-return 0
+function main () {
+    @ 2 + 2;
+    return 0
+}

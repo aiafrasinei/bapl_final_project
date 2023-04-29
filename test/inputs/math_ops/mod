@@ -1,2 +1,4 @@
-c = 6 % 2;
-return c
+function main () {
+    c = 6 % 2;
+    return c
+}

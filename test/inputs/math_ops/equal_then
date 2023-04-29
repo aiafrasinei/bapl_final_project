@@ -1,2 +1,4 @@
-a = 2 == 2;
-return a
+function main () {
+    a = 2 == 2;
+    return a
+}

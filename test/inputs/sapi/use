@@ -1,8 +1,10 @@
-PUSH 1;
-PUSH 2;
-PRINT;
-USE temp;
-PUSH 1;
-PRINT;
+function main () {
+    PUSH 1;
+    PUSH 2;
+    PRINT;
+    USE temp;
+    PUSH 1;
+    PRINT;
 
-return 0
+    return 0
+}

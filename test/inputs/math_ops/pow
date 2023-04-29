@@ -1,2 +1,4 @@
-b = 2 ^ 3;
-return b
+function main () {
+    b = 2 ^ 3;
+    return b
+}

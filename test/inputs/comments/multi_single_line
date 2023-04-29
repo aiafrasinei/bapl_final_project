@@ -1,5 +1,7 @@
-# this is a comment
-# another comment
-# last one
+function main () {
+    # this is a comment
+    # another comment
+    # last one
 
-return 0
+    return 0
+}

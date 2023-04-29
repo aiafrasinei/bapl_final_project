@@ -1,2 +1,4 @@
-var = 2 * 3;
-return var
+function main () {
+    var = 2 * 3;
+    return var
+}

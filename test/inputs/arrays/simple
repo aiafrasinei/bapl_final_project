@@ -1,4 +1,6 @@
-a = new[10];
-a[10] = 1;
+function main () {
+    a = new[10];
+    a[10] = 1;
 
-return a[10]
+    return a[10]
+}

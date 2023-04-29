@@ -1,5 +1,7 @@
-a = new[10];
-a[1] = new[1];
-a[1][1] = 38;
+function main () {
+    a = new[10];
+    a[1] = new[1];
+    a[1][1] = 38;
 
-return a[1][1]
+    return a[1][1]
+}

@@ -1,2 +1,4 @@
-a = 5 - 1;
-return a
+function main () {
+    a = 5 - 1;
+    return a
+}

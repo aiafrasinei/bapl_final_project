@@ -34,7 +34,7 @@ local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
     utils.node("number", "val") * space
 local text = alpha ^ 1 / utils.node("text", "val") * space
 
-local reserved = { "return", "if", "else", "elif", "while", "new", "@", "!",
+local reserved = { "return", "if", "else", "elif", "while", "new", "function", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PRINT", "PEEK", "USE" }
 
 local excluded = lpeg.P(false)
@@ -43,7 +43,7 @@ for i = 1, #reserved do
 end
 excluded = excluded * -alphanum
 
-local ID = (lpeg.C(alpha * alphanum ^ 0) - excluded) * space
+local ID = lpeg.V "ID"
 local var = ID / utils.node("variable", "var")
 
 
@@ -68,6 +68,7 @@ local opEqualThen = lpeg.C(lpeg.P "==") * space
 local opNotEqualThen = lpeg.C(lpeg.P "!=") * space
 
 local lhs = lpeg.V "lhs"
+local call = lpeg.V "call"
 local factor = lpeg.V "factor"
 local term0 = lpeg.V "term0"
 local term1 = lpeg.V "term1"
@@ -76,16 +77,21 @@ local exp = lpeg.V "exp"
 local stat = lpeg.V "stat"
 local stats = lpeg.V "stats"
 local block = lpeg.V "block"
+local funcDec = lpeg.V "funcDec"
 
 local grammar_table = {
   "prog",
-  prog = space * stats * -1,
+  prog = space * lpeg.Ct(funcDec ^ 1) * -1,
+  funcDec = Rw "function" * ID * T "(" * T ")" * block
+      / utils.node("function", "name", "body"),
+
   stats = stat * (T ";" ^ 1 * stats) ^ -1 / utils.nodeSeq,
-  block = T "{" * stats * T ";" ^ -1 * T "}",
+  block = T "{" * stats * T ";" ^ -1 * T "}" / utils.node("block", "body"),
   stat = block
       + Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 * (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
+      + call
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
       + Rw("@") * exp / utils.node("print", "exp")
       + Rw("!") * exp / utils.node("not", "exp")
@@ -98,10 +104,12 @@ local grammar_table = {
       + Rw("USE") * exp / utils.node("suse", "exp")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
+  call = ID * T "(" * T ")" / utils.node("call", "fname"),
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
       + T "\"" * text * T "\""
       + T "(" * exp * T ")"
+      + call
       + lhs,
   term0 = lpeg.Ct(factor * (opP * factor) ^ 0) / utils.foldBin,
   term1 = lpeg.Ct(term0 * ((opR + opM) * term0) ^ 0) / utils.foldBin,
@@ -116,7 +124,8 @@ local grammar_table = {
         err_line_nr = utils.get_err_line(a, p, err_line_nr);
 
         return true
-      end)
+      end),
+  ID = (lpeg.C(alpha * alphanum ^ 0) - excluded) * space
 }
 
 local grammar = lpeg.P(grammar_table)
@@ -135,17 +144,20 @@ end
 ----------------
 
 local function compile(ast)
-  Compiler:codeStat(ast)
-  Compiler:addCode("push")
-  Compiler:addCode(0)
-  Compiler:addCode("ret")
-  return Compiler.code
+  for i = 1, #ast do
+    Compiler:codeFunction(ast[i])
+  end
+  local main = Compiler.funcs["main"]
+  if not main then
+    error("no function 'main'")
+  end
+  return main.code
 end
 
 --- INTERPRETER ---
 -------------------
 
-local function run(code, mem, stack, sapi)
+local function run(code, mem, stack, top, sapi)
   local pc = 1
   local top = 0
   while true do
@@ -278,7 +290,7 @@ local function run(code, mem, stack, sapi)
         print("current_stack: " .. current_stack)
       end
     else
-      error("unknown instruction")
+      error("unknown instruction" .. code[pc])
     end
     pc = pc + 1
   end
@@ -305,5 +317,5 @@ end
 
 local stack = {}
 local mem = {}
-run(code, mem, stack, sapi)
+run(code, mem, stack, 0, sapi)
 print(stack[1])

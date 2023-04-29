@@ -1,3 +1,5 @@
-b = "temp";
+function main () {
+    b = "temp";
 
-return b
+    return b
+}

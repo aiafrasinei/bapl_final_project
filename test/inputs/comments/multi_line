@@ -1,4 +1,6 @@
-#{ multi line
-    teest comment
-    another test #} 
-return 0
+function main () {
+    #{ multi line
+        teest comment
+        another test #} 
+    return 0
+}

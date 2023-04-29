@@ -1,6 +1,6 @@
 local pt = require "pt"
 
-local Compiler = { code = {}, vars = {}, nvars = 0 }
+local Compiler = { funcs = {}, vars = {}, nvars = 0 }
 
 function Compiler:addCode(op)
   local code = self.code
@@ -52,6 +52,15 @@ function Compiler:fixJmp2here(jmp)
   self.code[jmp] = self:currentPosition()
 end
 
+function Compiler:codeCall(ast)
+  local func = self.funcs[ast.fname]
+  if not func then
+    error("undefined function " .. fname)
+  end
+  self:addCode("call")
+  self:addCode(func.code)
+end
+
 function Compiler:codeExp(ast)
   if ast.tag == "number" then
     self:addCode("push")
@@ -59,6 +68,8 @@ function Compiler:codeExp(ast)
   elseif ast.tag == "text" then
     self:addCode("push")
     self:addCode(ast.val)
+  elseif ast.tag == "call" then
+    self:codeCall(ast)
   elseif ast.tag == "variable" then
     self:addCode("load")
     --ALEX TODO
@@ -100,9 +111,19 @@ function Compiler:codeAssgn(ast)
   end
 end
 
+function Compiler:codeBlock(ast)
+  self:codeStat(ast.body)
+end
+
 function Compiler:codeStat(ast)
   if ast.tag == "assgn" then
     self:codeAssgn(ast)
+  elseif ast.tag == "call" then
+    self:codeCall(ast)
+    self:addCode("pop")
+    self:addCode(1)
+  elseif ast.tag == "block" then
+    self:codeBlock(ast)
   elseif ast.tag == "seq" then
     self:codeStat(ast.st1)
     self:codeStat(ast.st2)
@@ -154,6 +175,16 @@ function Compiler:codeStat(ast)
   else
     error("invalid tree")
   end
+end
+
+function Compiler:codeFunction(ast)
+  local code = {}
+  self.funcs[ast.name] = { code = code }
+  self.code = code
+  self:codeStat(ast.body)
+  self:addCode("push")
+  self:addCode(0)
+  self:addCode("ret")
 end
 
 return Compiler

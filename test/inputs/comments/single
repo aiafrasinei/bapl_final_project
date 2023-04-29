@@ -1,2 +1,4 @@
-# this is a comment
-return 0
+function main () {
+    # this is a comment
+    return 0
+}

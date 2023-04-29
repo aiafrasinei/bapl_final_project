@@ -1,12 +1,14 @@
-a = 4;
-b = 5;
+function main () {
+    a = 4;
+    b = 5;
 
-if a < b {
-    b = 1;
-} elif {
-    b = 2;
-} else {
-    b = 3; 
-};
+    if a < b {
+        b = 1;
+    } elif {
+        b = 2;
+    } else {
+        b = 3; 
+    };
 
-return b
+    return b
+}
