@@ -44,7 +44,8 @@ end
 excluded = excluded * -alphanum
 
 local ID = lpeg.V "ID"
-local var = ID / utils.node("variable", "var")
+local VID = lpeg.V "VID"
+local var = (VID + ID) / utils.node("variable", "var", "type")
 
 
 local function T(t)
@@ -128,7 +129,10 @@ local grammar_table = {
 
         return true
       end),
-  ID = (lpeg.C(alpha * alphanum ^ 0) - excluded) * space
+  ID = (lpeg.C(alpha * alphanum ^ 0) - excluded) * space,
+  VID = ((lpeg.C(alpha * alphanum ^ 0) * lpeg.P("_") *
+      lpeg.C((lpeg.P("f") + lpeg.P("t") + lpeg.P("n") + lpeg.P("s") + lpeg.P("b"))))
+    - excluded) * space
 }
 
 local grammar = lpeg.P(grammar_table)
@@ -304,19 +308,13 @@ local sapi = StackApi:new()
 current_stack = "default";
 
 local input = io.read("a")
-if DEBUG then
-  print(lpeg.match(lpeg.P(gram), input))
-end
+--print(lpeg.match(lpeg.P(gram), input))
 
 local ast = parse(input)
-if DEBUG then
-  print(pt.pt(ast))
-end
+--print(pt.pt(ast))
 
 local code = compile(ast)
-if DEBUG then
-  print(pt.pt(code))
-end
+--print(pt.pt(code))
 
 local stack = {}
 local mem = {}

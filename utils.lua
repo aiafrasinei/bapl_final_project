@@ -25,6 +25,7 @@ function utils.node(tag, ...)
   local labels = table.pack(...)
   local params = table.concat(labels, ", ")
   local fields = string.gsub(params, "(%w+)", "%1 = %1")
+
   local code = string.format(
     "return function (%s) return {tag = '%s', %s} end",
     params, tag, fields)
@@ -79,6 +80,10 @@ function utils.get_err_line(a, p, err_line_index)
   end
 
   return err_line_index
+end
+
+function utils.assign_type_check_err_str(var, type, tag)
+  return "ERR: Type check failed on assign, (var: " .. var .. " type: " .. type .. ") attempt to assign " .. tag
 end
 
 return utils

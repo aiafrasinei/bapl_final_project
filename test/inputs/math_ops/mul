@@ -1,4 +1,4 @@
 function main () {
-    var = 2 * 3;
+    var_n = 2 * 3;
     return var
 }

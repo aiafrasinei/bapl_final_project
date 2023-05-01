@@ -1,4 +1,4 @@
 function main () {
-    c = 6 % 2;
+    c_n = 6 % 2;
     return c
 }

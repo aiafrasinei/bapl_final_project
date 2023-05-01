@@ -3,6 +3,11 @@
 Final Project Report: [Project Name]
 Language Syntax
 
+In this section, describe the overall syntax of your language.
+New Features/Changes
+
+Selene language with some modifications.
+
 Interpreter has access to any number of stacks using stackapi.
 2 stacks are created by default: ("default" and "temp").
 Initial selected stack is the default.
@@ -11,18 +16,20 @@ Stacks can be selected using USE operation ( USE "temp"; ).
 Standard stack operations:
 PUSH exp, POP, DEPTH, DROP, PRINT, PEEK nr
 Additional stack operations:
-DUP, OVER, SWAP
+DUP, OVER, SWAP, ROT 
 Stack Api operations:
 ADD , RM , CLEAR, REPLACE, USE
-
-In this section, describe the overall syntax of your language.
-New Features/Changes
 
 In this section, describe the new features or changes that you have added to the programming language. This should include:
 
     Detailed explanation of each feature/change
     Examples of how they can be used
     Any trade-offs or limitations you are aware of
+
+    Comparison operators similar to bash (lt, gt, le, ge , eq, ne).
+    Types definitions:
+        <name> <field_name_type field2_type ...
+
 
 Future
 

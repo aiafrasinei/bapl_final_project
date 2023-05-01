@@ -1,4 +1,4 @@
 function main () {
-    a = 6 / 2;
+    a_n = 6 / 2;
     return a
 }

@@ -1,4 +1,4 @@
 function main () {
-    a = 2 lt 3;
+    a_n = 2 lt 3;
     return a
 }

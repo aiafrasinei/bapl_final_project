@@ -1,4 +1,4 @@
 function main () {
-    a = 5 - 1;
+    a_n = 5 - 1;
     return a
 }

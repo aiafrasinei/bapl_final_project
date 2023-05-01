@@ -1,3 +1,9 @@
 function main () {
-    return 42
+    a_n = 2;
+    @ 2 + a;
+    b_n = a + 2;
+    @ b;
+    b_n = "text";
+    
+    return b
 }

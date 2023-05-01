@@ -1,4 +1,5 @@
 local pt = require "pt"
+local utils = require "utils"
 
 local Compiler = { funcs = {}, vars = {}, nvars = 0 }
 
@@ -86,6 +87,7 @@ function Compiler:codeExp(ast)
     self:codeExp(ast.size)
     self:addCode("newarray")
   elseif ast.tag == "binop" then
+    -- ALEX TODO
     self:codeExp(ast.e1)
     self:codeExp(ast.e2)
     self:addCode(ops[ast.op])
@@ -97,7 +99,24 @@ end
 function Compiler:codeAssgn(ast)
   local lhs = ast.lhs
   if lhs.tag == "variable" then
-    -- ALEX TODO
+    -- ALEX TODO TYPE CHECKING
+    if ast.exp.tag == 'text' then
+      if ast.lhs.type == "n" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+        print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+        os.exit(1)
+      end
+    elseif ast.exp.tag == "number" then
+      if ast.lhs.type == "s" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+        print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+        os.exit(1)
+      end
+    elseif ast.exp.tag == "boolean" then
+      if ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+        print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+        os.exit(1)
+      end
+    end
+
     self:codeExp(ast.exp)
     self:addCode("store")
     self:addCode(self:var2num(lhs.var))
