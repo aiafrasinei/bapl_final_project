@@ -25,6 +25,11 @@ setup() {
     assert_output --partial "[ 1 2 3 ]"
 }
 
+@test "print text" {
+    run lua interpreter.lua < test/inputs/statements/print_text
+    assert_output --partial "text"
+}
+
 @test "not expresions" {
     run lua interpreter.lua < test/inputs/statements/not
     assert_output "1"

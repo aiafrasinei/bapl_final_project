@@ -97,7 +97,7 @@ local grammar_table = {
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
       + call
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
-      + Rw("@") * exp / utils.node("print", "exp")
+      + Rw("@") * (exp + T "\"" * text * T "\"") / utils.node("print", "exp")
       + Rw("!") * exp / utils.node("not", "exp")
       + Rw("PUSH") * exp / utils.node("spush", "exp")
       + Rw("POP") / utils.node("spop")

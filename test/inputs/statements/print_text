@@ -1,0 +1,4 @@
+function main () {
+    @ "text";
+    return 0
+}

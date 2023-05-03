@@ -1,8 +1,5 @@
 function main () {
-    a_b = false;
-    b_b = true;
-
-    @ a;
+    @ "test";
 
     return b
 }
