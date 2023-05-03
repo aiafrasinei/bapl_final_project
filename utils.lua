@@ -86,4 +86,10 @@ function utils.assign_type_check_err_str(var, type, tag)
   return "ERR: Type check failed on assign, (var: " .. var .. " type: " .. type .. ") attempt to assign " .. tag
 end
 
+function utils.comparison_type_check_err_str(var1, var2)
+  return "ERR: Type check failed on if comparison, (var: " ..
+      var1.var .. " type: " .. var1.type .. ") with " .. "(var: " ..
+      var2.var .. " type: " .. var2.type .. ")"
+end
+
 return utils

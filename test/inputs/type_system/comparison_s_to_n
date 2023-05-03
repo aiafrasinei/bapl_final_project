@@ -2,8 +2,8 @@ function main () {
     a_n = 2;
     b_s = "test";
 
-    if a_n lt b_s {
-        b = 12;
+    if b_s lt a_n {
+        b = "tes";
     };
 
     return b

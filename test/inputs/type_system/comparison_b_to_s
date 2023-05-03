@@ -1,5 +1,5 @@
 function main () {
-    a_n = 2;
+    a_n = false;
     b_s = "test";
 
     if a_n lt b_s {

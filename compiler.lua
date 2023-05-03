@@ -100,18 +100,18 @@ function Compiler:codeAssgn(ast)
   local lhs = ast.lhs
   if lhs.tag == "variable" then
     -- ALEX TODO TYPE CHECKING
-    if ast.exp.tag == 'text' then
-      if ast.lhs.type == "n" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+    if ast.exp.tag == "text" then
+      if ast.lhs.type == "e" or ast.lhs.type == "n" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
         os.exit(1)
       end
     elseif ast.exp.tag == "number" then
-      if ast.lhs.type == "s" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+      if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
         os.exit(1)
       end
     elseif ast.exp.tag == "boolean" then
-      if ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+      if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
         os.exit(1)
       end
@@ -180,6 +180,18 @@ function Compiler:codeStat(ast)
     self:codeJmpB("jmp", ilabel)
     self:fixJmp2here(jmp)
   elseif ast.tag == "if1" then
+    if ast.cond.e2.type == "s" then
+      if ast.cond.e1.type == "e" or ast.cond.e1.type == "n" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
+        print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
+        os.exit(1)
+      end
+    elseif ast.cond.e2.type == "n" then
+      if ast.cond.e1.type == "e" or ast.cond.e1.type == "s" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
+        print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
+        os.exit(1)
+      end
+    end
+
     self:codeExp(ast.cond)
     local jmp = self:codeJmpF("jmpZ")
     self:codeStat(ast.th)

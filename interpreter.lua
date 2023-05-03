@@ -85,7 +85,6 @@ local grammar_table = {
   prog = space * lpeg.Ct(funcDec ^ 1) * -1,
   funcDec = Rw "function" * ID * T "(" * T ")" * block
       / utils.node("function", "name", "body"),
-
   stats = stat * (T ";" ^ 1 * stats) ^ -1 / utils.nodeSeq,
   block = T "{" * stats * T ";" ^ -1 * T "}" /
       utils.node("block", "body"),
@@ -131,7 +130,7 @@ local grammar_table = {
       end),
   ID = (lpeg.C(alpha * alphanum ^ 0) - excluded) * space,
   VID = ((lpeg.C(alpha * alphanum ^ 0) * lpeg.P("_") *
-      lpeg.C((lpeg.P("f") + lpeg.P("t") + lpeg.P("n") + lpeg.P("s") + lpeg.P("b"))))
+      lpeg.C((lpeg.P("e") + lpeg.P("f") + lpeg.P("t") + lpeg.P("n") + lpeg.P("s") + lpeg.P("b"))))
     - excluded) * space
 }
 

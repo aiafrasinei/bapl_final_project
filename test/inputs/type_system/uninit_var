@@ -1,0 +1,10 @@
+ function main () {
+    a = 1;
+    b = 1;
+    if (a eq b) {
+        x = 10;
+    };
+    @ x+1;
+
+    return 0
+}

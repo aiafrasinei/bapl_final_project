@@ -1,0 +1,5 @@
+ function main () {
+    b_b = "temp";
+
+    return b
+}
