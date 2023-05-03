@@ -33,6 +33,7 @@ local space = lpeg.V "space"
 local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
     utils.node("number", "val") * space
 local text = alpha ^ 1 / utils.node("text", "val") * space
+local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * space
 
 local reserved = { "return", "if", "else", "elif", "while", "new", "function", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PRINT", "PEEK", "USE" }
@@ -111,6 +112,7 @@ local grammar_table = {
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
       + T "\"" * text * T "\""
+      + bool
       + T "(" * exp * T ")"
       + call
       + lhs,

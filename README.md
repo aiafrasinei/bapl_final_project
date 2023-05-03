@@ -8,6 +8,22 @@ New Features/Changes
 
 Selene language with some modifications.
 
+Variables names with types:
+"varname"_"type"
+
+_e - empty
+_b - boolean
+_n - number
+_s - string
+_f - function
+_t - table
+
+examples:
+temp_b = false;
+i_n = 1000;
+str_s = "tes"
+nr_n = 10
+
 Interpreter has access to any number of stacks using stackapi.
 2 stacks are created by default: ("default" and "temp").
 Initial selected stack is the default.
@@ -16,7 +32,7 @@ Stacks can be selected using USE operation ( USE "temp"; ).
 Standard stack operations:
 PUSH exp, POP, DEPTH, DROP, PRINT, PEEK nr
 Additional stack operations:
-DUP, OVER, SWAP, ROT 
+DUP, OVER, SWAP, ROT , MINROT
 Stack Api operations:
 ADD , RM , CLEAR, REPLACE, USE
 

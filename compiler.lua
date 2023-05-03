@@ -69,6 +69,9 @@ function Compiler:codeExp(ast)
   elseif ast.tag == "text" then
     self:addCode("push")
     self:addCode(ast.val)
+  elseif ast.tag == "bool" then
+    self:addCode("push")
+    self:addCode(ast.val)
   elseif ast.tag == "call" then
     self:codeCall(ast)
   elseif ast.tag == "variable" then
@@ -110,7 +113,7 @@ function Compiler:codeAssgn(ast)
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
         os.exit(1)
       end
-    elseif ast.exp.tag == "boolean" then
+    elseif ast.exp.tag == "bool" then
       if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
         os.exit(1)
