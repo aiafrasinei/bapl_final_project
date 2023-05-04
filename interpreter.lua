@@ -37,7 +37,7 @@ local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * sp
 
 local reserved = { "return", "if", "else", "elif", "while", "new", "function", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PEEK", "DUP", "SWAP", "OVER", "ROT", "MINROT",
-  "SPRINT", "SUSE", "SADD", "SRM", "SREP" }
+  "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA" }
 
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
@@ -115,6 +115,8 @@ local grammar_table = {
       + Rw("SADD") * exp / utils.node("sadd", "exp")
       + Rw("SRM") * exp / utils.node("srm", "exp")
       + Rw("SREP") * exp / utils.node("srep", "exp")
+      + Rw("SCLEAR") * exp / utils.node("sclear", "exp")
+      + Rw("SRA") / utils.node("sra")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   call = ID * T "(" * T ")" / utils.node("call", "fname"),
@@ -318,6 +320,11 @@ local function run(code, mem, stack, top, sapi)
       sapi:remove(stack[top])
     elseif code[pc] == "srep" then
       sapi:copy(current_stack, stack[top])
+    elseif code[pc] == "sclear" then
+      sapi:clear(stack[top])
+    elseif code[pc] == "sra" then
+      sapi:removeall()
+      print("REMOVE ALL")
     else
       error("unknown instruction" .. code[pc])
     end

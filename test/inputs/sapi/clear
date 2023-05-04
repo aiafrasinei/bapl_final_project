@@ -1,0 +1,8 @@
+function main () {
+    PUSH 1
+    SCLEAR "default"
+    PUSH "first"
+    SPRINT
+
+    return 0
+}

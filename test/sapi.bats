@@ -34,3 +34,13 @@ setup() {
     run lua interpreter.lua < test/inputs/sapi/sadd
     assert_output --partial "1 2 3"
 }
+
+@test "stack clear" {
+    run lua interpreter.lua < test/inputs/sapi/clear
+    assert_output --partial "first"
+}
+
+@test "stack remove all" {
+    run lua interpreter.lua < test/inputs/sapi/sra
+    assert_output --partial "alive"
+}

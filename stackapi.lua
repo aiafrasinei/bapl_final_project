@@ -19,6 +19,7 @@ function StackApi:add(name, stack)
 end
 
 function StackApi:adde(name)
+    print("adde")
     self.stacks[name] = Stack:new()
 end
 
