@@ -12,10 +12,25 @@ setup() {
 
 @test "use" {
     run lua interpreter.lua < test/inputs/sapi/use
-    assert_output "1"
+    assert_output --partial "first"
 }
 
 @test "stack ops" {
     run lua interpreter.lua < test/inputs/sapi/ops
     assert_output --partial "1 1"
+}
+
+@test "stack add" {
+    run lua interpreter.lua < test/inputs/sapi/sadd
+    assert_output --partial "1 2 3"
+}
+
+@test "stack remove" {
+    run lua interpreter.lua < test/inputs/sapi/srm
+    assert_output --partial "alive"
+}
+
+@test "stack replace" {
+    run lua interpreter.lua < test/inputs/sapi/sadd
+    assert_output --partial "1 2 3"
 }

@@ -181,6 +181,15 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "suse" then
     self:codeExp(ast.exp)
     self:addCode("suse")
+  elseif ast.tag == "sadd" then
+    self:codeExp(ast.exp)
+    self:addCode("sadd")
+  elseif ast.tag == "srm" then
+    self:codeExp(ast.exp)
+    self:addCode("srm")
+  elseif ast.tag == "srep" then
+    self:codeExp(ast.exp)
+    self:addCode("srep")
   elseif ast.tag == "while1" then
     local ilabel = self:currentPosition()
     self:codeExp(ast.cond)

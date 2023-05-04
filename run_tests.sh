@@ -10,3 +10,4 @@
 ./test/bats/bin/bats test/functions.bats
 ./test/bats/bin/bats test/type_system.bats
 ./test/bats/bin/bats test/bools.bats
+./test/bats/bin/bats test/sapi.bats

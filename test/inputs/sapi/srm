@@ -3,7 +3,10 @@ function main () {
     PUSH 2
     PUSH 3
     SUSE "temp"
-    SREP "default"
+    SRM "default"
+    SADD "default"
+    SUSE "default"
+    PUSH "alive"
     SPRINT
 
     return 0

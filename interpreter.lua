@@ -37,7 +37,7 @@ local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * sp
 
 local reserved = { "return", "if", "else", "elif", "while", "new", "function", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PEEK", "DUP", "SWAP", "OVER", "ROT", "MINROT",
-  "SPRINT", "SUSE", "SADD", "SRM", "SCHANGE" }
+  "SPRINT", "SUSE", "SADD", "SRM", "SREP" }
 
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
@@ -114,7 +114,7 @@ local grammar_table = {
       + Rw("SUSE") * exp / utils.node("suse", "exp")
       + Rw("SADD") * exp / utils.node("sadd", "exp")
       + Rw("SRM") * exp / utils.node("srm", "exp")
-      + Rw("SCHANGE") * exp / utils.node("schange", "exp")
+      + Rw("SREP") * exp / utils.node("srep", "exp")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   call = ID * T "(" * T ")" / utils.node("call", "fname"),
@@ -290,8 +290,6 @@ local function run(code, mem, stack, top, sapi)
       end
       top = top - 1
     elseif code[pc] == "spush" then
-      print(current_stack)
-      print(stack[top])
       sapi:getStack(current_stack):push(stack[top])
     elseif code[pc] == "spop" then
       sapi:getStack(current_stack):pop()
@@ -314,6 +312,12 @@ local function run(code, mem, stack, top, sapi)
       if DEBUG then
         print("current_stack: " .. current_stack)
       end
+    elseif code[pc] == "sadd" then
+      sapi:adde(stack[top])
+    elseif code[pc] == "srm" then
+      sapi:remove(stack[top])
+    elseif code[pc] == "srep" then
+      sapi:copy(current_stack, stack[top])
     else
       error("unknown instruction" .. code[pc])
     end

@@ -1,8 +1,9 @@
 function main () {
+    SADD "new"
+    SUSE "new"
     PUSH 1
     PUSH 2
-    SUSE "temp"
-    PUSH "first"
+    PUSH 3
     SPRINT
 
     return 0

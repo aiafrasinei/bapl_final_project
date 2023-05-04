@@ -18,14 +18,22 @@ function StackApi:add(name, stack)
     self.stacks[name] = stack
 end
 
+function StackApi:adde(name)
+    self.stacks[name] = Stack:new()
+end
+
 --remove
 function StackApi:remove(name)
     self.stacks[name] = nil
 end
 
---remove
+--replace
 function StackApi:replace(name, stack)
     self.stacks[name] = stack
+end
+
+function StackApi:copy(current, new)
+    self.stacks[current] = self.stacks[new]
 end
 
 --removeall
