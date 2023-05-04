@@ -43,3 +43,33 @@ end
 function Stack:depth()
     return #self.stack
 end
+
+function Stack:dup()
+    if #self.stack == 0 then
+        return nil
+    end
+    local last = self.stack[#self.stack]
+    table.insert(self.stack, last)
+end
+
+function Stack:swap()
+    if #self.stack < 2 then
+        return nil
+    end
+    local temp = self.stack[#self.stack]
+    self.stack[#self.stack] = self.stack[#self.stack - 1]
+    self.stack[#self.stack - 1] = temp
+end
+
+function Stack:over()
+    if #self.stack < 1 then
+        return nil
+    end
+    table.insert(self.stack, self.stack[#self.stack - 1])
+end
+
+function Stack:rot()
+end
+
+function Stack:minrot()
+end

@@ -167,6 +167,12 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "speek" then
     self:codeExp(ast.exp)
     self:addCode("speek")
+  elseif ast.tag == "sdup" then
+    self:addCode("sdup")
+  elseif ast.tag == "sover" then
+    self:addCode("sover")
+  elseif ast.tag == "sswap" then
+    self:addCode("sswap")
   elseif ast.tag == "sdrop" then
     self:addCode("sdrop")
   elseif ast.tag == "not" then

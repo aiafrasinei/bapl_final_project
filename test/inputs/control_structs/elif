@@ -1,14 +1,14 @@
 function main () {
-    a = 5;
-    b = 4;
+    a = 5
+    b = 4
 
     if a lt b {
-        b = 1;
+        b = 1
     } elif a gt b {
-        b = 2;
+        b = 2
     } else {
-        b = 3; 
-    };
+        b = 3 
+    }
 
     return b
 }

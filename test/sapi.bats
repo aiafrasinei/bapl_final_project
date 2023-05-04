@@ -15,3 +15,7 @@ setup() {
     assert_output "1"
 }
 
+@test "stack ops" {
+    run lua interpreter.lua < test/inputs/sapi/ops
+    assert_output --partial "1 1"
+}

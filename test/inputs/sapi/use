@@ -1,10 +1,10 @@
 function main () {
-    PUSH 1;
-    PUSH 2;
-    PRINT;
-    USE temp;
-    PUSH 1;
-    PRINT;
+    PUSH 1
+    PUSH 2
+    SPRINT
+    SUSE "temp"
+    PUSH 1
+    SPRINT
 
     return 0
 }

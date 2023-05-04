@@ -1,10 +1,10 @@
 function main () {
-    a_n = 2;
-    b_s = "test";
+    a_n = 2
+    b_s = "test"
 
     if b_s lt a_n {
-        b = "tes";
-    };
+        b = "tes"
+    }
 
     return b
 }

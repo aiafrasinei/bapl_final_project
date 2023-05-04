@@ -1,6 +1,6 @@
 function main () {
-    a_b = false;
-    b_b = true;
+    a_b = false
+    b_b = true
 
     return b
 }

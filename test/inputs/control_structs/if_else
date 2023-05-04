@@ -1,12 +1,12 @@
 function main () {
-    a = 3;
-    b = 2;
+    a = 3
+    b = 2
 
     if a lt b {
-        b = 11;
+        b = 11
     } else {
-        b = 12; 
-    };
+        b = 12 
+    }
 
     return b
 }

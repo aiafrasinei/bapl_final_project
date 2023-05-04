@@ -36,7 +36,8 @@ local text = alpha ^ 1 / utils.node("text", "val") * space
 local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * space
 
 local reserved = { "return", "if", "else", "elif", "while", "new", "function", "@", "!",
-  "PUSH", "POP", "DEPTH", "DROP", "PRINT", "PEEK", "USE" }
+  "PUSH", "POP", "DEPTH", "DROP", "PEEK", "DUP", "SWAP", "OVER", "ROT", "MINROT",
+  "SPRINT", "SUSE", "SADD", "SRM", "SCHANGE" }
 
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
@@ -86,8 +87,8 @@ local grammar_table = {
   prog = space * lpeg.Ct(funcDec ^ 1) * -1,
   funcDec = Rw "function" * ID * T "(" * T ")" * block
       / utils.node("function", "name", "body"),
-  stats = stat * (T ";" ^ 1 * stats) ^ -1 / utils.nodeSeq,
-  block = T "{" * stats * T ";" ^ -1 * T "}" /
+  stats = stat * stats ^ -1 / utils.nodeSeq,
+  block = T "{" * stats * T "}" /
       utils.node("block", "body"),
   stat = block
       +
@@ -103,9 +104,17 @@ local grammar_table = {
       + Rw("POP") / utils.node("spop")
       + Rw("DEPTH") / utils.node("sdepth")
       + Rw("DROP") / utils.node("sdrop")
-      + Rw("PRINT") / utils.node("sprint")
       + Rw("PEEK") * exp / utils.node("speek", "exp")
-      + Rw("USE") * exp / utils.node("suse", "exp")
+      + Rw("DUP") / utils.node("sdup")
+      + Rw("SWAP") / utils.node("sswap")
+      + Rw("OVER") / utils.node("sover")
+      + Rw("ROT") / utils.node("srot")
+      + Rw("MINROT") / utils.node("sminrot")
+      + Rw("SPRINT") / utils.node("sprint")
+      + Rw("SUSE") * exp / utils.node("suse", "exp")
+      + Rw("SADD") * exp / utils.node("sadd", "exp")
+      + Rw("SRM") * exp / utils.node("srm", "exp")
+      + Rw("SCHANGE") * exp / utils.node("schange", "exp")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   call = ID * T "(" * T ")" / utils.node("call", "fname"),
@@ -281,17 +290,25 @@ local function run(code, mem, stack, top, sapi)
       end
       top = top - 1
     elseif code[pc] == "spush" then
+      print(current_stack)
+      print(stack[top])
       sapi:getStack(current_stack):push(stack[top])
     elseif code[pc] == "spop" then
       sapi:getStack(current_stack):pop()
     elseif code[pc] == "sdepth" then
       sapi:getStack(current_stack):push(sapi:getStack(current_stack):depth())
-    elseif code[pc] == "sprint" then
-      print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "speek" then
       print(sapi:getStack(current_stack):peek(tonumber(stack[top])))
     elseif code[pc] == "sdrop" then
       sapi:getStack(current_stack):clear()
+    elseif code[pc] == "sdup" then
+      sapi:getStack(current_stack):dup()
+    elseif code[pc] == "sswap" then
+      sapi:getStack(current_stack):swap()
+    elseif code[pc] == "sover" then
+      sapi:getStack(current_stack):over()
+    elseif code[pc] == "sprint" then
+      print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "suse" then
       current_stack = stack[top]
       if DEBUG then

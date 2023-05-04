@@ -1,9 +1,7 @@
 function main () {
     PUSH 1
-    PUSH 2
     DUP
     SPRINT
-
-
+    
     return 0
 }
