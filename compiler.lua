@@ -175,6 +175,10 @@ function Compiler:codeStat(ast)
     self:addCode("sswap")
   elseif ast.tag == "sdrop" then
     self:addCode("sdrop")
+  elseif ast.tag == "srot" then
+    self:addCode("srot")
+  elseif ast.tag == "sminrot" then
+    self:addCode("sminrot")
   elseif ast.tag == "not" then
     self:codeExp(ast.exp)
     self:addCode("not")
@@ -235,10 +239,36 @@ function Compiler:codeFunction(ast)
   local code = {}
   self.funcs[ast.name] = { code = code }
   self.code = code
-  self:codeStat(ast.body)
+  if ast.body ~= nil then
+    self:codeStat(ast.body)
+  end
   self:addCode("push")
   self:addCode(0)
   self:addCode("ret")
+end
+
+function Compiler:fixFwdDeclaration(ast)
+  local duplicates = {}
+  local torm = {}
+
+  for i = 1, #ast do
+    if ast[i].tag == "function" then
+      if ast[i].body == nil then
+        duplicates[#duplicates + 1] = { i, ast[i].name }
+      else
+        for j = 1, #duplicates do
+          if ast[i].name == duplicates[j][2] then
+            ast[duplicates[j][1]].body = ast[i].body
+            torm[#torm + 1] = i
+          end
+        end
+      end
+    end
+  end
+
+  for i = 1, #torm do
+    table.remove(ast, i)
+  end
 end
 
 return Compiler

@@ -69,7 +69,22 @@ function Stack:over()
 end
 
 function Stack:rot()
+    if #self.stack < 3 then
+        return nil
+    end
+    local temp = self.stack[#self.stack - 2]
+    self.stack[#self.stack - 2] = self.stack[#self.stack - 1]
+    self.stack[#self.stack - 1] = self.stack[#self.stack]
+    self.stack[#self.stack] = temp
 end
 
 function Stack:minrot()
+    if #self.stack < 3 then
+        return nil
+    end
+
+    local temp = self.stack[#self.stack]
+    self.stack[#self.stack] = self.stack[#self.stack - 1]
+    self.stack[#self.stack - 1] = self.stack[#self.stack - 2]
+    self.stack[#self.stack - 2] = temp
 end

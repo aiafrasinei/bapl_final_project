@@ -81,10 +81,13 @@ local stat = lpeg.V "stat"
 local stats = lpeg.V "stats"
 local block = lpeg.V "block"
 local funcDec = lpeg.V "funcDec"
+local funcFwdDec = lpeg.V "funcFwdDec"
 
 local grammar_table = {
   "prog",
-  prog = space * lpeg.Ct(funcDec ^ 1) * -1,
+  prog = space * lpeg.Ct((funcDec + funcFwdDec) ^ 1) * -1,
+  funcFwdDec = Rw "function" * ID * T "(" * T ")"
+      / utils.node("function", "name"),
   funcDec = Rw "function" * ID * T "(" * T ")" * block
       / utils.node("function", "name", "body"),
   stats = stat * stats ^ -1 / utils.nodeSeq,
@@ -163,6 +166,8 @@ end
 ----------------
 
 local function compile(ast)
+  Compiler:fixFwdDeclaration(ast)
+
   for i = 1, #ast do
     Compiler:codeFunction(ast[i])
   end
@@ -307,6 +312,10 @@ local function run(code, mem, stack, top, sapi)
       sapi:getStack(current_stack):swap()
     elseif code[pc] == "sover" then
       sapi:getStack(current_stack):over()
+    elseif code[pc] == "srot" then
+      sapi:getStack(current_stack):rot()
+    elseif code[pc] == "sminrot" then
+      sapi:getStack(current_stack):minrot()
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "suse" then
@@ -324,7 +333,6 @@ local function run(code, mem, stack, top, sapi)
       sapi:clear(stack[top])
     elseif code[pc] == "sra" then
       sapi:removeall()
-      print("REMOVE ALL")
     else
       error("unknown instruction" .. code[pc])
     end

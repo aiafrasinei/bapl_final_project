@@ -44,3 +44,8 @@ setup() {
     run lua interpreter.lua < test/inputs/sapi/sra
     assert_output --partial "alive"
 }
+
+@test "stack rot minrot" {
+    run lua interpreter.lua < test/inputs/sapi/rot_minrot
+    assert_output --partial "1 2 3"
+}

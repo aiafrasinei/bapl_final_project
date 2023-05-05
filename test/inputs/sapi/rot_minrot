@@ -2,10 +2,10 @@ function main () {
     PUSH 1
     PUSH 2
     PUSH 3
-    SUSE "temp"
-    SREP "default"
+
+    ROT
+    MINROT
     SPRINT
-    +
-    
+
     return 0
 }
