@@ -1,7 +1,7 @@
 local pt = require "pt"
 local utils = require "utils"
 
-local Compiler = { funcs = {}, vars = {}, nvars = 0 }
+local Compiler = { funcs = {}, vars = {}, nvars = 0, locals = {} }
 
 function Compiler:addCode(op)
   local code = self.code
@@ -53,10 +53,33 @@ function Compiler:fixJmp2here(jmp)
   self.code[jmp] = self:currentPosition()
 end
 
+function Compiler:findLocal(name)
+  local vars = self.locals
+  for i = #vars, 1, -1 do
+    if name == vars[i] then
+      return i
+    end
+  end
+  local params = self.params
+  for i = 1, #params do
+    if name == params[i] then
+      return -(#params - i)
+    end
+  end
+  return false -- not found
+end
+
 function Compiler:codeCall(ast)
   local func = self.funcs[ast.fname]
   if not func then
-    error("undefined function " .. fname)
+    error("undefined function " .. ast.fname)
+  end
+  local args = ast.args
+  if #args ~= #func.params then
+    error("wrong number of arguments calling " .. ast.fname)
+  end
+  for i = 1, #args do
+    self:codeExp(args[i])
   end
   self:addCode("call")
   self:addCode(func.code)
@@ -75,13 +98,14 @@ function Compiler:codeExp(ast)
   elseif ast.tag == "call" then
     self:codeCall(ast)
   elseif ast.tag == "variable" then
-    self:addCode("load")
-    --ALEX TODO
-    --if ast.val == nil then
-    --  self:addCode(ast.var)
-    --else
-    self:addCode(self:var2num(ast.var))
-    --end
+    local idx = self:findLocal(ast.var)
+    if idx then
+      self:addCode("loadL")
+      self:addCode(idx)
+    else
+      self:addCode("load")
+      self:addCode(self:var2num(ast.var))
+    end
   elseif ast.tag == "indexed" then
     self:codeExp(ast.array)
     self:codeExp(ast.index)
@@ -121,8 +145,14 @@ function Compiler:codeAssgn(ast)
     end
 
     self:codeExp(ast.exp)
-    self:addCode("store")
-    self:addCode(self:var2num(lhs.var))
+    local idx = self:findLocal(lhs.var)
+    if idx then
+      self:addCode("storeL")
+      self:addCode(idx)
+    else
+      self:addCode("store")
+      self:addCode(self:var2num(lhs.var))
+    end
   elseif lhs.tag == "indexed" then
     self:codeExp(lhs.array)
     self:codeExp(lhs.index)
@@ -134,12 +164,22 @@ function Compiler:codeAssgn(ast)
 end
 
 function Compiler:codeBlock(ast)
+  local oldlevel = #self.locals
   self:codeStat(ast.body)
+  local n = #self.locals - oldlevel -- number of new local variables
+  if n > 0 then
+    for i = 1, n do table.remove(self.locals) end
+    self:addCode("pop")
+    self:addCode(n)
+  end
 end
 
 function Compiler:codeStat(ast)
   if ast.tag == "assgn" then
     self:codeAssgn(ast)
+  elseif ast.tag == "local" then
+    self:codeExp(ast.init)
+    self.locals[#self.locals + 1] = ast.name
   elseif ast.tag == "call" then
     self:codeCall(ast)
     self:addCode("pop")
@@ -152,6 +192,7 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "ret" then
     self:codeExp(ast.exp)
     self:addCode("ret")
+    self:addCode(#self.locals + #self.params)
   elseif ast.tag == "print" then
     self:codeExp(ast.exp)
     self:addCode("print")
@@ -207,7 +248,7 @@ function Compiler:codeStat(ast)
     self:codeJmpB("jmp", ilabel)
     self:fixJmp2here(jmp)
   elseif ast.tag == "if1" then
-    if ast.cond.e2.type == "s" then
+    --[[if ast.cond.e2.type == "s" then
       if ast.cond.e1.type == "e" or ast.cond.e1.type == "n" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
         print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
         os.exit(1)
@@ -217,8 +258,7 @@ function Compiler:codeStat(ast)
         print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
         os.exit(1)
       end
-    end
-
+    end--]]
     self:codeExp(ast.cond)
     local jmp = self:codeJmpF("jmpZ")
     self:codeStat(ast.th)
@@ -237,14 +277,14 @@ end
 
 function Compiler:codeFunction(ast)
   local code = {}
-  self.funcs[ast.name] = { code = code }
+  self.funcs[ast.name] = { code = code, params = ast.params }
   self.code = code
-  if ast.body ~= nil then
-    self:codeStat(ast.body)
-  end
+  self.params = ast.params
+  self:codeStat(ast.body)
   self:addCode("push")
   self:addCode(0)
   self:addCode("ret")
+  self:addCode(#self.locals + #self.params)
 end
 
 function Compiler:fixFwdDeclaration(ast)

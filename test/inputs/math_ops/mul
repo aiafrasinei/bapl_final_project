@@ -1,5 +1,5 @@
 function main () {
-    var_n = 2 * 3
+    a_n = 2 * 3
     
-    return var
+    return a
 }

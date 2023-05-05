@@ -14,3 +14,8 @@ setup() {
     run lua interpreter.lua < test/inputs/functions/42
     assert_output "42"
 }
+
+@test "fact" {
+    run lua interpreter.lua < test/inputs/functions/fact
+    assert_output "720"
+}

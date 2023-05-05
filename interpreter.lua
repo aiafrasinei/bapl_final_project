@@ -35,7 +35,7 @@ local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
 local text = alpha ^ 1 / utils.node("text", "val") * space
 local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * space
 
-local reserved = { "return", "if", "else", "elif", "while", "new", "function", "@", "!",
+local reserved = { "return", "if", "else", "elif", "while", "new", "function", "var", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PEEK", "DUP", "SWAP", "OVER", "ROT", "MINROT",
   "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA" }
 
@@ -82,24 +82,26 @@ local stats = lpeg.V "stats"
 local block = lpeg.V "block"
 local funcDec = lpeg.V "funcDec"
 local funcFwdDec = lpeg.V "funcFwdDec"
+local args = lpeg.V "args"
+local params = lpeg.V "params"
 
 local grammar_table = {
   "prog",
   prog = space * lpeg.Ct((funcDec + funcFwdDec) ^ 1) * -1,
-  funcFwdDec = Rw "function" * ID * T "(" * T ")"
+  funcFwdDec = Rw "function" * ID * T "(" * params * T ")"
       / utils.node("function", "name"),
-  funcDec = Rw "function" * ID * T "(" * T ")" * block
-      / utils.node("function", "name", "body"),
+  funcDec = Rw "function" * ID * T "(" * params * T ")" * block
+      / utils.node("function", "name", "params", "body"),
+  params = lpeg.Ct((ID * (T "," * ID) ^ 0) ^ -1),
   stats = stat * stats ^ -1 / utils.nodeSeq,
   block = T "{" * stats * T "}" /
       utils.node("block", "body"),
   stat = block
-      +
-      Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 *
+      + Rw "var" * ID * T "=" * exp / utils.node("local", "name", "init")
+      + Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 *
       (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
-      + call
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
       + Rw("@") * (exp + T "\"" * text * T "\"") / utils.node("print", "exp")
       + Rw("!") * exp / utils.node("not", "exp")
@@ -122,7 +124,8 @@ local grammar_table = {
       + Rw("SRA") / utils.node("sra")
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
-  call = ID * T "(" * T ")" / utils.node("call", "fname"),
+  call = ID * T "(" * args * T ")" / utils.node("call", "fname", "args"),
+  args = lpeg.Ct((exp * (T "," * exp) ^ 0) ^ -1),
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
       + T "\"" * text * T "\""
@@ -183,7 +186,7 @@ end
 
 local function run(code, mem, stack, top, sapi)
   local pc = 1
-  local top = 0
+  local base = top
   while true do
     local comp_result = 0
     --[[
@@ -192,7 +195,17 @@ local function run(code, mem, stack, top, sapi)
   io.write("\n", code[pc], "\n")
   --]]
     if code[pc] == "ret" then
-      return
+      local n = code[pc + 1] -- number of active local variables
+      stack[top - n] = stack[top]
+      top = top - n
+      return top
+    elseif code[pc] == "call" then
+      pc = pc + 1
+      local code = code[pc]
+      top = run(code, mem, stack, top)
+    elseif code[pc] == "pop" then
+      pc = pc + 1
+      top = top - code[pc]
     elseif code[pc] == "print" then
       if (type(stack[top]) == "table") then
         io.write("[")
@@ -264,6 +277,16 @@ local function run(code, mem, stack, top, sapi)
       top = top - 1
     elseif code[pc] == "not" then
       stack[top] = utils.neg(stack[top])
+    elseif code[pc] == "loadL" then
+      pc = pc + 1
+      local n = code[pc]
+      top = top + 1
+      stack[top] = stack[base + n]
+    elseif code[pc] == "storeL" then
+      pc = pc + 1
+      local n = code[pc]
+      stack[base + n] = stack[top]
+      top = top - 1
     elseif code[pc] == "load" then
       pc = pc + 1
       local id = code[pc]
