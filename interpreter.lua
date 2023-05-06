@@ -371,7 +371,7 @@ local input = io.read("a")
 --print(lpeg.match(lpeg.P(gram), input))
 
 local ast = parse(input)
-print(pt.pt(ast))
+--print(pt.pt(ast))
 
 local code = compile(ast)
 --print(pt.pt(code))
