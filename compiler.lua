@@ -248,17 +248,19 @@ function Compiler:codeStat(ast)
     self:codeJmpB("jmp", ilabel)
     self:fixJmp2here(jmp)
   elseif ast.tag == "if1" then
-    --[[if ast.cond.e2.type == "s" then
-      if ast.cond.e1.type == "e" or ast.cond.e1.type == "n" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
-        print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
-        os.exit(1)
+    if ast.cond.e1 ~= nil and ast.cond.e2 ~= nil then
+      if ast.cond.e2.type == "s" then
+        if ast.cond.e1.type == "e" or ast.cond.e1.type == "n" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
+          print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
+          os.exit(1)
+        end
+      elseif ast.cond.e2.type == "n" then
+        if ast.cond.e1.type == "e" or ast.cond.e1.type == "s" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
+          print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
+          os.exit(1)
+        end
       end
-    elseif ast.cond.e2.type == "n" then
-      if ast.cond.e1.type == "e" or ast.cond.e1.type == "s" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
-        print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
-        os.exit(1)
-      end
-    end--]]
+    end
     self:codeExp(ast.cond)
     local jmp = self:codeJmpF("jmpZ")
     self:codeStat(ast.th)
@@ -287,7 +289,33 @@ function Compiler:codeFunction(ast)
   self:addCode(#self.locals + #self.params)
 end
 
+function Compiler:checkForMultipleFwdDeclaration(ast)
+  local dups = {}
+
+  for i = 1, #ast do
+    if ast[i].tag == "function" then
+      if ast[i].body == nil then
+        dups[ast[i].name] = i
+      end
+    end
+  end
+
+  local fwd_errs = false
+  for k, v in pairs(dups) do
+    if v > 1 then
+      fwd_errs = true
+      print("ERR: multiple forward declarations for function " .. k)
+    end
+  end
+
+  if fwd_errs then
+    os.exit(1)
+  end
+end
+
 function Compiler:fixFwdDeclaration(ast)
+  Compiler:checkForMultipleFwdDeclaration(ast)
+
   local duplicates = {}
   local torm = {}
 

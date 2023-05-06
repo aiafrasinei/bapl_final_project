@@ -1,0 +1,17 @@
+function factorial (n)
+
+function factorial (n)
+
+function factorial (n)
+
+function factorial1 (n)
+
+function factorial1 (n)
+
+function factorial2 (n)
+
+function factorial2 (n)
+
+function main () {
+    return factorial(6)
+}
