@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     SADD "new"
     SUSE "new"
     PUSH 1

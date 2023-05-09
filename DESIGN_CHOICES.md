@@ -21,6 +21,10 @@ a_n = 2;
 str_s = “some text”;
 boo_b = false;
 
+Functions syntax for return types:
+function main_n () {
+    return factorial(6)
+}
 
 So far i added type checks on assignment and if.
 If you dont use _type when declaring variables no type checks are performed.
@@ -49,20 +53,9 @@ MINROT - ( n1 n2 n3 — n3 n1 n2 )
 API to create stacks:
 SUSE “name”     - change the current stack
 SADD “name”     - add stack
-SRM “name”       - stack remove
-SREP “name”      - stack replace
-SCLEAR “name” - stack clear
-SRA                    - remove all stacks
+SRM “name”      - stack remove
+SREP “name”     - stack replace
+SCLEAR “name”   - stack clear
+SRA             - remove all stacks
 
-Example:
-function main () {
-	PUSH 1
-	PUSH 2
-	PRINT
-	SUSE “temp”
-	PUSH 1
-	PRINT
-
-	return 0
-}
 

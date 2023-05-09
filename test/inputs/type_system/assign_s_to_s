@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     b_s = "temp"
 
     return b

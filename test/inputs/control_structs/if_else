@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     a = 3
     b = 2
 

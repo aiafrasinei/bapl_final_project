@@ -1,6 +1,6 @@
-function factorial (n)
+function factorial_n (n)
 
-function factorial (n) {
+function factorial_n (n) {
     if n {
         return n * factorial(n-1)
     } else {
@@ -8,6 +8,6 @@ function factorial (n) {
     }
 }
 
-function main () {
+function main_n () {
     return factorial(6)
 }

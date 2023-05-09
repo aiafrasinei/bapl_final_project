@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     a_n = 1
     b_s = "test"
 

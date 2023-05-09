@@ -1,17 +1,17 @@
-function factorial (n)
+function factorial_n (n)
 
-function factorial (n)
+function factorial_n (n)
 
-function factorial (n)
+function factorial_n (n)
 
-function factorial1 (n)
+function factorial1_n (n)
 
-function factorial1 (n)
+function factorial1_n (n)
 
-function factorial2 (n)
+function factorial2_n (n)
 
-function factorial2 (n)
+function factorial2_n (n)
 
-function main () {
+function main_n () {
     return factorial(6)
 }

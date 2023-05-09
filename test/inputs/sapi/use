@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     PUSH 1
     PUSH 2
     SUSE "temp"

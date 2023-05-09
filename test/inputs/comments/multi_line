@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     #{ multi line
         teest comment
         another test #} 

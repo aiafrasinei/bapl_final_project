@@ -24,6 +24,7 @@ local alphanum = alpha + digit
 local comment = "#" * (lpeg.P(1) - "\n") ^ 0
 local block_comment = "#{" * (lpeg.P(1) - "#}") ^ 0 * "#}"
 local comments = block_comment + comment;
+local types = lpeg.C((lpeg.P("e") + lpeg.P("f") + lpeg.P("t") + lpeg.P("n") + lpeg.P("s") + lpeg.P("b")))
 
 local maxmatch = 0
 local err_line_nr = 1
@@ -46,8 +47,8 @@ end
 excluded = excluded * -alphanum
 
 local ID = lpeg.V "ID"
-local VID = lpeg.V "VID"
-local var = (VID + ID) / utils.node("variable", "var", "type")
+local IDT = lpeg.V "IDT"
+local var = (IDT + ID) / utils.node("variable", "var", "type")
 
 
 local function T(t)
@@ -88,10 +89,10 @@ local params = lpeg.V "params"
 local grammar_table = {
   "prog",
   prog = space * lpeg.Ct((funcDec + funcFwdDec) ^ 1) * -1,
-  funcFwdDec = Rw "function" * ID * T "(" * params * T ")"
-      / utils.node("function", "name"),
-  funcDec = Rw "function" * ID * T "(" * params * T ")" * block
-      / utils.node("function", "name", "params", "body"),
+  funcFwdDec = Rw "function" * IDT * T "(" * params * T ")"
+      / utils.node("function", "name", "type"),
+  funcDec = Rw "function" * IDT * T "(" * params * T ")" * block
+      / utils.node("function", "name", "type", "params", "body"),
   params = lpeg.Ct((ID * (T "," * ID) ^ 0) ^ -1),
   stats = stat * stats ^ -1 / utils.nodeSeq,
   block = T "{" * stats * T "}" /
@@ -148,9 +149,7 @@ local grammar_table = {
         return true
       end),
   ID = (lpeg.C(alpha * alphanum ^ 0) - excluded) * space,
-  VID = ((lpeg.C(alpha * alphanum ^ 0) * lpeg.P("_") *
-      lpeg.C((lpeg.P("e") + lpeg.P("f") + lpeg.P("t") + lpeg.P("n") + lpeg.P("s") + lpeg.P("b"))))
-    - excluded) * space
+  IDT = ((lpeg.C(alpha * alphanum ^ 0) * lpeg.P("_") * types) - excluded) * space
 }
 
 local grammar = lpeg.P(grammar_table)

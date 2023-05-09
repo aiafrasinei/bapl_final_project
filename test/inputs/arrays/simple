@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     a = new[10]
     a[10] = 1
 

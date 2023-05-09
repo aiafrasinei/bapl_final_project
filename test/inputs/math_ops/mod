@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     c_n = 6 % 2
     
     return c

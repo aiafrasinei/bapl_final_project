@@ -1,4 +1,4 @@
-function main () {
+function main_n () {
     a_b = false
     b_b = true
 

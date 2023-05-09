@@ -42,7 +42,7 @@ setup() {
 
 @test "comparison b to s" {
     run lua interpreter.lua < test/inputs/type_system/comparison_b_to_s
-    assert_output "ERR: Type check failed on if comparison, (var: a type: n) with (var: b type: s)"
+    assert_output "ERR: Type check failed on if comparison, (var: a type: b) with (var: b type: s)"
 }
 
 @test "unitialized var" {
