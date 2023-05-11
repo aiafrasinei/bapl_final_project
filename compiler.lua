@@ -62,7 +62,7 @@ function Compiler:findLocal(name)
   end
   local params = self.params
   for i = 1, #params do
-    if name == params[i] then
+    if name == params[i].var then
       return -(#params - i)
     end
   end

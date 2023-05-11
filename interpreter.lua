@@ -93,7 +93,7 @@ local grammar_table = {
       / utils.node("function", "name", "type"),
   funcDec = Rw "function" * IDT * T "(" * params * T ")" * block
       / utils.node("function", "name", "type", "params", "body"),
-  params = lpeg.Ct((ID * (T "," * ID) ^ 0) ^ -1),
+  params = lpeg.Ct((exp * (T "," * exp) ^ 0) ^ -1),
   stats = stat * stats ^ -1 / utils.nodeSeq,
   block = T "{" * stats * T "}" /
       utils.node("block", "body"),
