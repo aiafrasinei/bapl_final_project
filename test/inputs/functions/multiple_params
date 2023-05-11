@@ -1,0 +1,8 @@
+function sum_n (a_n, b_n, c_n) {
+    return a + b + c
+}
+
+function main_n () {
+    res_n = sum(1,1,1)
+    return res
+}

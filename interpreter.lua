@@ -123,6 +123,7 @@ local grammar_table = {
       + Rw("SREP") * exp / utils.node("srep", "exp")
       + Rw("SCLEAR") * exp / utils.node("sclear", "exp")
       + Rw("SRA") / utils.node("sra")
+      + call
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
   call = ID * T "(" * args * T ")" / utils.node("call", "fname", "args"),

@@ -29,3 +29,18 @@ setup() {
     run lua interpreter.lua < test/inputs/functions/multiple_fwd_decl
     assert_output --partial "ERR: multiple forward declarations for function factorial"
 }
+
+@test "fact with types" {
+    run lua interpreter.lua < test/inputs/functions/fact_with_types
+    assert_output "720"
+}
+
+@test "sum" {
+    run lua interpreter.lua < test/inputs/functions/sum
+    assert_output "2"
+}
+
+@test "multiple params" {
+    run lua interpreter.lua < test/inputs/functions/multiple_params
+    assert_output "3"
+}
