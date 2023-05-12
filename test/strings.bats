@@ -14,3 +14,8 @@ setup() {
     run lua interpreter.lua < test/inputs/strings/simple
     assert_output "temp"
 }
+
+@test "string param" {
+    run lua interpreter.lua < test/inputs/strings/params
+    assert_output "test"
+}

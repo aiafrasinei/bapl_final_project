@@ -49,3 +49,9 @@ setup() {
     run lua interpreter.lua < test/inputs/type_system/uninit_var
     assert_output --partial "11"
 }
+
+@test "function call return check" {
+    run lua interpreter.lua < test/inputs/type_system/assign_f_to_s
+    assert_output "ERR: Type check failed on function call, asignement (var: test type: s) = (funct: factorial type: n)"
+}
+

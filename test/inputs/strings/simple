@@ -1,5 +1,6 @@
 function main_n () {
-    b = "temp"
-
+    c = "temp"
+    b_s = c
+    
     return b
 }

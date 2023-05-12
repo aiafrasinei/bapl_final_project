@@ -1,0 +1,10 @@
+function err_s (e_s)
+{
+    return e
+}
+
+function main_n () {
+    b_s = err("test")
+    
+    return b
+}

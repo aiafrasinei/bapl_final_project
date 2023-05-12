@@ -72,12 +72,15 @@ end
 function Compiler:codeCall(ast)
   local func = self.funcs[ast.fname]
   if not func then
-    error("undefined function " .. ast.fname)
+    print("ERR: Undefined function " .. ast.fname)
+    os.exit(1)
   end
   local args = ast.args
   if #args ~= #func.params then
-    error("wrong number of arguments calling " .. ast.fname)
+    print("ERR: Wrong number of arguments calling " .. ast.fname)
+    os.exit(1)
   end
+
   for i = 1, #args do
     self:codeExp(args[i])
   end
@@ -140,6 +143,16 @@ function Compiler:codeAssgn(ast)
     elseif ast.exp.tag == "bool" then
       if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+        os.exit(1)
+      end
+    end
+
+    if ast.exp.tag == "call" then
+      if self.funcs[ast.exp.fname].ret ~= ast.lhs.type then
+        print("ERR: Type check failed on function call, asignement (var: " ..
+          ast.lhs.var ..
+          " type: " ..
+          ast.lhs.type .. ") = (funct: " .. ast.exp.fname .. " type: " .. self.funcs[ast.exp.fname].ret .. ")")
         os.exit(1)
       end
     end
@@ -279,7 +292,7 @@ end
 
 function Compiler:codeFunction(ast)
   local code = {}
-  self.funcs[ast.name] = { code = code, params = ast.params }
+  self.funcs[ast.name] = { code = code, params = ast.params, ret = ast.type }
   self.code = code
   self.params = ast.params
   self:codeStat(ast.body)
