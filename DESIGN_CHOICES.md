@@ -26,7 +26,7 @@ function main_n () {
     return factorial(6)
 }
 
-So far i added type checks on assignment and if.
+Type checks on assignment,if and function call return.
 If you dont use _type when declaring variables no type checks are performed.
 
 StackApi
@@ -57,5 +57,3 @@ SRM “name”      - stack remove
 SREP “name”     - stack replace
 SCLEAR “name”   - stack clear
 SRA             - remove all stacks
-
-

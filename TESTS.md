@@ -6,6 +6,6 @@ https://github.com/bats-core/bats-core
 Input files are located in test/inputs
 bats files
 
-Make sure the DEBUG variable is set to false in interpreter.lua
+Test check the output of the programs.
 
 To run all tests: ./run_tests.sh

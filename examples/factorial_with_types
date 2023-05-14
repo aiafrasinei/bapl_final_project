@@ -1,0 +1,13 @@
+function factorial_n (nr_n) {
+    if nr {
+        return nr * factorial(nr-1)
+    } else {
+        return 1
+    }
+}
+
+function main_n () {
+    input_n = 6
+    test_n = factorial(input)
+    return test
+}
