@@ -1,0 +1,12 @@
+function main_n () {
+    PUSH 1
+    PUSH 1
+    PUSH 2
+    PUSH 2
+    PUSH 3
+    PUSH 3
+    2MINROT
+    SPRINT
+
+    return 0
+}

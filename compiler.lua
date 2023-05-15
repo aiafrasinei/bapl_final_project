@@ -233,6 +233,28 @@ function Compiler:codeStat(ast)
     self:addCode("srot")
   elseif ast.tag == "sminrot" then
     self:addCode("sminrot")
+  elseif ast.tag == "s2drop" then
+    self:addCode("s2drop")
+  elseif ast.tag == "s2swap" then
+    self:addCode("s2swap")
+  elseif ast.tag == "s2dup" then
+    self:addCode("s2dup")
+  elseif ast.tag == "s2over" then
+    self:addCode("s2over")
+  elseif ast.tag == "s2rot" then
+    self:addCode("s2rot")
+  elseif ast.tag == "s2minrot" then
+    self:addCode("s2minrot")
+  elseif ast.tag == "s+" then
+    self:addCode("s+")
+  elseif ast.tag == "s-" then
+    self:addCode("s-")
+  elseif ast.tag == "s*" then
+    self:addCode("s*")
+  elseif ast.tag == "s/" then
+    self:addCode("s/")
+  elseif ast.tag == "s%" then
+    self:addCode("s%")
   elseif ast.tag == "not" then
     self:codeExp(ast.exp)
     self:addCode("not")

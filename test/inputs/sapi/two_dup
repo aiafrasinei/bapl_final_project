@@ -1,0 +1,8 @@
+function main_n () {
+    PUSH 2
+    PUSH 2
+    2DUP
+    SPRINT
+
+    return 0
+}

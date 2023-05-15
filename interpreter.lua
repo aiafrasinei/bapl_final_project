@@ -37,7 +37,9 @@ local text = alpha ^ 1 / utils.node("text", "val") * space
 local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * space
 
 local reserved = { "return", "if", "else", "elif", "while", "new", "function", "var", "@", "!",
-  "PUSH", "POP", "DEPTH", "DROP", "PEEK", "DUP", "SWAP", "OVER", "ROT", "MINROT",
+  "PUSH", "POP", "DEPTH", "DROP", "PEEK",
+  "DUP", "SWAP", "OVER", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
+  "S+", "S-", "S*", "S/", "S%",
   "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA" }
 
 local excluded = lpeg.P(false)
@@ -116,6 +118,17 @@ local grammar_table = {
       + Rw("OVER") / utils.node("sover")
       + Rw("ROT") / utils.node("srot")
       + Rw("MINROT") / utils.node("sminrot")
+      + Rw("2DROP") / utils.node("s2drop")
+      + Rw("2SWAP") / utils.node("s2swap")
+      + Rw("2DUP") / utils.node("s2dup")
+      + Rw("2OVER") / utils.node("s2over")
+      + Rw("2ROT") / utils.node("s2rot")
+      + Rw("2MINROT") / utils.node("s2minrot")
+      + Rw("S+") / utils.node("s+")
+      + Rw("S-") / utils.node("s-")
+      + Rw("S*") / utils.node("s*")
+      + Rw("S/") / utils.node("s/")
+      + Rw("S%") / utils.node("s%")
       + Rw("SPRINT") / utils.node("sprint")
       + Rw("SUSE") * exp / utils.node("suse", "exp")
       + Rw("SADD") * exp / utils.node("sadd", "exp")
@@ -328,7 +341,7 @@ local function run(code, mem, stack, top, sapi)
     elseif code[pc] == "speek" then
       print(sapi:getStack(current_stack):peek(tonumber(stack[top])))
     elseif code[pc] == "sdrop" then
-      sapi:getStack(current_stack):clear()
+      sapi:getStack(current_stack):pop()
     elseif code[pc] == "sdup" then
       sapi:getStack(current_stack):dup()
     elseif code[pc] == "sswap" then
@@ -339,6 +352,29 @@ local function run(code, mem, stack, top, sapi)
       sapi:getStack(current_stack):rot()
     elseif code[pc] == "sminrot" then
       sapi:getStack(current_stack):minrot()
+    elseif code[pc] == "s2drop" then
+      sapi:getStack(current_stack):twodrop()
+    elseif code[pc] == "s2swap" then
+      sapi:getStack(current_stack):twoswap()
+    elseif code[pc] == "s2dup" then
+      sapi:getStack(current_stack):dup()
+      sapi:getStack(current_stack):dup()
+    elseif code[pc] == "s2over" then
+      sapi:getStack(current_stack):twoover()
+    elseif code[pc] == "s2rot" then
+      sapi:getStack(current_stack):tworot()
+    elseif code[pc] == "s2minrot" then
+      sapi:getStack(current_stack):twominrot()
+    elseif code[pc] == "s+" then
+      sapi:getStack(current_stack):add()
+    elseif code[pc] == "s-" then
+      sapi:getStack(current_stack):minus()
+    elseif code[pc] == "s*" then
+      sapi:getStack(current_stack):multiply()
+    elseif code[pc] == "s/" then
+      sapi:getStack(current_stack):division()
+    elseif code[pc] == "s%" then
+      sapi:getStack(current_stack):modulo()
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "suse" then

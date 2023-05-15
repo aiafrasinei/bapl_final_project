@@ -49,3 +49,60 @@ setup() {
     run lua interpreter.lua < test/inputs/sapi/rot_minrot
     assert_output --partial "1 2 3"
 }
+
+@test "stack two drop" {
+    run lua interpreter.lua < test/inputs/sapi/two_drop
+    assert_output --partial "5"
+}
+
+@test "stack two swap" {
+    run lua interpreter.lua < test/inputs/sapi/two_swap
+    assert_output --partial "3 3 2 2"
+}
+
+@test "stack two dup" {
+    run lua interpreter.lua < test/inputs/sapi/two_dup
+    assert_output --partial "2 2 2 2"
+}
+
+@test "stack two over" {
+    run lua interpreter.lua < test/inputs/sapi/two_over
+    assert_output --partial "3 3 2 2 3 3"
+}
+
+
+@test "stack two rot" {
+    run lua interpreter.lua < test/inputs/sapi/two_rot
+    assert_output --partial "2 2 3 3 1 1"
+}
+
+
+@test "stack two minrot" {
+    run lua interpreter.lua < test/inputs/sapi/two_minrot
+    assert_output --partial "3 3 1 1 2 2"
+}
+
+@test "addition" {
+    run lua interpreter.lua < test/inputs/sapi/s+
+    assert_output --partial "3"
+}
+
+@test "minus" {
+    run lua interpreter.lua < test/inputs/sapi/s-
+    assert_output --partial "2"
+}
+
+@test "mul" {
+    run lua interpreter.lua < test/inputs/sapi/smul
+    assert_output --partial "4"
+}
+
+@test "division" {
+    run lua interpreter.lua < test/inputs/sapi/sdivision
+    assert_output --partial "0"
+}
+
+@test "modulo" {
+    run lua interpreter.lua < test/inputs/sapi/s%
+    assert_output --partial "2"
+}
