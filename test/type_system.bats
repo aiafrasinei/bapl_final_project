@@ -27,7 +27,7 @@ setup() {
 
 @test "assign s to s" {
     run lua interpreter.lua < test/inputs/type_system/assign_s_to_s
-    assert_output "temp"
+    assert_output "\""temp"\""
 }
 
 @test "comparison n to s" {

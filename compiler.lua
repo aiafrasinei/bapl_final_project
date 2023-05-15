@@ -241,6 +241,8 @@ function Compiler:codeStat(ast)
     self:addCode("s2dup")
   elseif ast.tag == "s2over" then
     self:addCode("s2over")
+  elseif ast.tag == "stuck" then
+    self:addCode("stuck")
   elseif ast.tag == "s2rot" then
     self:addCode("s2rot")
   elseif ast.tag == "s2minrot" then

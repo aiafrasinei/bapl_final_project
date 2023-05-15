@@ -19,8 +19,8 @@ New Features/Changes
     _t - table
 
     example variables:
-    temp_b = false;
-    i_n = 1000;
+    temp_b = false
+    i_n = 1000
     str_s = "tes"
     nr_n = 10
 
@@ -61,6 +61,7 @@ New Features/Changes
     DUP      : ( n - n n )
     SWAP     : ( n1 n2 - n2 n1 )
     OVER     : ( n1 n2 - n1 n2 n1 )
+    TUCK     : ( n1 n2 - n2 n1 n2 )
     ROT      : ( n1 n2 n3 - n2 n3 n1 )
     MINROT   : ( n1 n2 n3 - n3 n1 n2 )
     2DROP    : ( n1 n2 - )
@@ -138,6 +139,7 @@ Self assessment
     I learned a lot and given the time i had available i am proud of the result.
 
 Have you gone beyond the base requirements? How so?
+
     Type system.
     Proper unit tests that check the output of the program.
     Organization of the code.
@@ -150,3 +152,4 @@ List any references used in the development of your language besides this course
     Crafting interpreters book
     https://www.forth.com/starting-forth/2-stack-manipulation-operators-arithmetic/
     https://projecteuler.net
+    https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html

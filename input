@@ -1,0 +1,6 @@
+function main_n () {
+    PUSH "testt esttest"
+    SPRINT
+    
+    return 0
+}

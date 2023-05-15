@@ -1,4 +1,5 @@
 local lpeg = require "lpeg"
+local locale = lpeg.locale();
 local pt = require "pt"
 local utils = require "utils"
 local Compiler = require "compiler"
@@ -30,15 +31,14 @@ local maxmatch = 0
 local err_line_nr = 1
 local space = lpeg.V "space"
 
-
 local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
     utils.node("number", "val") * space
-local text = alpha ^ 1 / utils.node("text", "val") * space
+local text = ("\"" * (lpeg.P(1) - "\"") ^ 0 * "\"") ^ 1 / utils.node("text", "val") * space
 local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * space
 
 local reserved = { "return", "if", "else", "elif", "while", "new", "function", "var", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PEEK",
-  "DUP", "SWAP", "OVER", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
+  "DUP", "SWAP", "OVER", "TUCK", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
   "S+", "S-", "S*", "S/", "S%",
   "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA" }
 
@@ -106,7 +106,7 @@ local grammar_table = {
       / utils.node("if1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
       + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
-      + Rw("@") * (exp + T "\"" * text * T "\"") / utils.node("print", "exp")
+      + Rw("@") * (exp + text) / utils.node("print", "exp")
       + Rw("!") * exp / utils.node("not", "exp")
       + Rw("PUSH") * exp / utils.node("spush", "exp")
       + Rw("POP") / utils.node("spop")
@@ -116,6 +116,7 @@ local grammar_table = {
       + Rw("DUP") / utils.node("sdup")
       + Rw("SWAP") / utils.node("sswap")
       + Rw("OVER") / utils.node("sover")
+      + Rw("TUCK") / utils.node("stuck")
       + Rw("ROT") / utils.node("srot")
       + Rw("MINROT") / utils.node("sminrot")
       + Rw("2DROP") / utils.node("s2drop")
@@ -143,7 +144,7 @@ local grammar_table = {
   args = lpeg.Ct((exp * (T "," * exp) ^ 0) ^ -1),
   factor = Rw("new") * T "[" * exp * T "]" / utils.node("new", "size")
       + numeral
-      + T "\"" * text * T "\""
+      + text
       + bool
       + T "(" * exp * T ")"
       + call
@@ -361,6 +362,8 @@ local function run(code, mem, stack, top, sapi)
       sapi:getStack(current_stack):dup()
     elseif code[pc] == "s2over" then
       sapi:getStack(current_stack):twoover()
+    elseif code[pc] == "stuck" then
+      sapi:getStack(current_stack):tuck()
     elseif code[pc] == "s2rot" then
       sapi:getStack(current_stack):tworot()
     elseif code[pc] == "s2minrot" then
@@ -378,18 +381,19 @@ local function run(code, mem, stack, top, sapi)
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "suse" then
-      current_stack = stack[top]
+      current_stack = stack[top]:gsub('"', '')
+      print(current_stack)
       if DEBUG then
         print("current_stack: " .. current_stack)
       end
     elseif code[pc] == "sadd" then
-      sapi:adde(stack[top])
+      sapi:adde(stack[top]:gsub('"', ''))
     elseif code[pc] == "srm" then
-      sapi:remove(stack[top])
+      sapi:remove(stack[top]:gsub('"', ''))
     elseif code[pc] == "srep" then
       sapi:copy(current_stack, stack[top])
     elseif code[pc] == "sclear" then
-      sapi:clear(stack[top])
+      sapi:clear(stack[top]:gsub('"', ''))
     elseif code[pc] == "sra" then
       sapi:removeall()
     else

@@ -37,7 +37,7 @@ setup() {
 
 @test "stack clear" {
     run lua interpreter.lua < test/inputs/sapi/clear
-    assert_output --partial "first"
+    assert_output --partial "\""first"\""
 }
 
 @test "stack remove all" {
@@ -70,6 +70,10 @@ setup() {
     assert_output --partial "3 3 2 2 3 3"
 }
 
+@test "stack tuck" {
+    run lua interpreter.lua < test/inputs/sapi/tuck
+    assert_output --partial "2 1 2"
+}
 
 @test "stack two rot" {
     run lua interpreter.lua < test/inputs/sapi/two_rot

@@ -129,6 +129,15 @@ function Stack:twoover()
     self:push(temp2)
 end
 
+function Stack:tuck()
+    if #self.stack < 2 then
+        return nil
+    end
+
+    self:swap()
+    self:over()
+end
+
 function Stack:tworot()
     if #self.stack < 6 then
         return nil
