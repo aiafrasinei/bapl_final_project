@@ -92,4 +92,13 @@ function utils.comparison_type_check_err_str(var1, var2)
       var2.var .. " type: " .. var2.type .. ")"
 end
 
+function utils.split_string(str, delimiter)
+  local result = {}
+  local str = str .. delimiter
+  for slice in string.gmatch(str, "(.-)" .. delimiter) do
+    table.insert(result, slice)
+  end
+  return result
+end
+
 return utils

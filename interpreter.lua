@@ -40,7 +40,8 @@ local reserved = { "return", "if", "else", "elif", "while", "new", "function", "
   "PUSH", "POP", "DEPTH", "DROP", "PEEK",
   "DUP", "SWAP", "OVER", "TUCK", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
   "S+", "S-", "S*", "S/", "S%",
-  "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA" }
+  "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA",
+  "RPNEVAL" }
 
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
@@ -130,6 +131,7 @@ local grammar_table = {
       + Rw("S*") / utils.node("s*")
       + Rw("S/") / utils.node("s/")
       + Rw("S%") / utils.node("s%")
+      + Rw("RPNEVAL") * exp / utils.node("srpneval", "exp")
       + Rw("SPRINT") / utils.node("sprint")
       + Rw("SUSE") * exp / utils.node("suse", "exp")
       + Rw("SADD") * exp / utils.node("sadd", "exp")
@@ -378,11 +380,28 @@ local function run(code, mem, stack, top, sapi)
       sapi:getStack(current_stack):division()
     elseif code[pc] == "s%" then
       sapi:getStack(current_stack):modulo()
+    elseif code[pc] == "srpneval" then
+      local rpnops = utils.split_string(stack[top]:gsub('"', ''), " ")
+      for i = 1, #rpnops do
+        if type(tonumber(rpnops[i])) == "number" then
+          sapi:getStack(current_stack):push(rpnops[i])
+        end
+        if rpnops[i] == "+" then
+          sapi:getStack(current_stack):add()
+        elseif rpnops[i] == "-" then
+          sapi:getStack(current_stack):minus()
+        elseif rpnops[i] == "*" then
+          sapi:getStack(current_stack):multiply()
+        elseif rpnops[i] == "/" then
+          sapi:getStack(current_stack):division()
+        elseif rpnops[i] == "%" then
+          sapi:getStack(current_stack):modulo()
+        end
+      end
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "suse" then
       current_stack = stack[top]:gsub('"', '')
-      print(current_stack)
       if DEBUG then
         print("current_stack: " .. current_stack)
       end
