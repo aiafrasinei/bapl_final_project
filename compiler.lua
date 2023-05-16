@@ -129,7 +129,7 @@ end
 function Compiler:codeAssgn(ast)
   local lhs = ast.lhs
   if lhs.tag == "variable" then
-    -- ALEX TODO TYPE CHECKING
+    -- TODO TYPE CHECKING
     if ast.exp.tag == "text" then
       if ast.lhs.type == "e" or ast.lhs.type == "n" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
         print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
@@ -148,6 +148,27 @@ function Compiler:codeAssgn(ast)
     end
 
     if ast.exp.tag == "call" then
+      if #self.funcs[ast.exp.fname].params ~= #ast.exp.args then
+        print("ERR: Function call " .. ast.exp.fname .. " with " ..
+          #ast.exp.args .. " parameters (function definition has " .. #self.funcs[ast.exp.fname].params .. ")")
+        os.exit(1)
+      else
+        for i = 1, #ast.exp.args do
+          if ast.exp.args[i].tag == 'number' and self.funcs[ast.exp.fname].params[i].type ~= 'n' then
+            print("ERR: Function call " ..
+              ast.exp.fname ..
+              " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
+            os.exit(1)
+          end
+          if ast.exp.args[i].tag == 'string' and self.funcs[ast.exp.fname].params[i].type ~= 's' then
+            print("ERR: Function call " ..
+              ast.exp.fname ..
+              " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
+            os.exit(1)
+          end
+        end
+      end
+
       if self.funcs[ast.exp.fname].ret ~= ast.lhs.type then
         print("ERR: Type check failed on function call, asignement (var: " ..
           ast.lhs.var ..

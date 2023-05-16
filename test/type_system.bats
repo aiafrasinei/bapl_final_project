@@ -55,3 +55,12 @@ setup() {
     assert_output "ERR: Type check failed on function call, asignement (var: test type: s) = (funct: factorial type: n)"
 }
 
+@test "function with wrong number of params" {
+    run lua interpreter.lua < test/inputs/type_system/funct_with_wrong_nr_params
+    assert_output "ERR: Function call sum with 1 parameters (function definition has 2)"
+}
+
+@test "mismatch function type parameters" {
+    run lua interpreter.lua < test/inputs/type_system/mismatch_function_type_params
+    assert_output "ERR: Function call sum parameter type mismatch (expected type: s)"
+}

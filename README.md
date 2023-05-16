@@ -89,16 +89,21 @@ New Features/Changes
     S/ - division        - ( n1 n2 — quot )
     S% - mod             - ( n1 n2 — rem )
 
+    RPNEVAL "rpn_ops"    - reverse polish notation evaluation
+    Expects a rpn expression (applies all the arithmetic ops using the current stack)
+    example: RPNEVAL "1 2 + 3 +" will leave the result 6 at the top
+
 In this section, describe the new features or changes that you have added to the programming language. This should include:
 
     Detailed explanation of each feature/change
 
-    - Unit tests using bash bats tool (57 input files, this saved me a lot of times when i created regressions)
+    - Unit tests using bash bats tool (this saved me a lot of times when i created regressions)
     - Exp supports bool and strings
     - @ can print strings
     - Remove semicolons from syntax
     - Bash like comparison operators (lt, gt, le, ge, eq, ne)
     - Forward function declarations and error check for multiple declarations
+    - The stack operations described above
     - Optional type system
 
     Type checks on assignment,if and function call return.
@@ -120,7 +125,7 @@ What would be needed to get this project ready for production?
 
 How would you extend this project to do something more? Are there other features you’d like? How would you go about adding them?
 
-    Would like to use this language for scripting purposes (like bash but better).Have some apis for process management.
+    Would like to use this language for scripting purposes.Have some apis for process management.
     Keep the language simple to use, type system is optional.
     I have this idea of using sqlite3 db as files and main data structure.
     For example this statement: 
@@ -141,6 +146,7 @@ Self assessment
 Have you gone beyond the base requirements? How so?
 
     Type system.
+    The stack api.
     Proper unit tests that check the output of the program.
     Organization of the code.
     Examples directory (i used some problems from https://projecteuler.net)
@@ -153,3 +159,4 @@ List any references used in the development of your language besides this course
     https://www.forth.com/starting-forth/2-stack-manipulation-operators-arithmetic/
     https://projecteuler.net
     https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html
+    https://mathworld.wolfram.com/ReversePolishNotation.html
