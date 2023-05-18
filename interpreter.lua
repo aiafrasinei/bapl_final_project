@@ -36,7 +36,7 @@ local numeral = lpeg.P("-") ^ 0 * lpeg.R("09") ^ 1 / tonumber /
 local text = ("\"" * (lpeg.P(1) - "\"") ^ 0 * "\"") ^ 1 / utils.node("text", "val") * space
 local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * space
 
-local reserved = { "return", "if", "else", "elif", "while", "new", "function", "var", "@", "!",
+local reserved = { "return", "if", "unless", "else", "elif", "while", "new", "function", "var", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PEEK",
   "DUP", "SWAP", "OVER", "TUCK", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
   "S+", "S-", "S*", "S/", "S%",
@@ -105,6 +105,8 @@ local grammar_table = {
       + Rw("if") * exp * block * (Rw("elif") * exp * block) ^ 0 *
       (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
+      + Rw("unless") * exp * block * (Rw("else") * block) ^ -1
+      / utils.node("unless1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
       + ((lhs * T "=" * exp) + lhs) / utils.node("assgn", "lhs", "exp")
       + Rw("@") * (exp + text) / utils.node("print", "exp")

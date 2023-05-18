@@ -14,3 +14,8 @@ setup() {
     run lua interpreter.lua < test/inputs/bools/simple
     assert_output "true"
 }
+
+@test "bool if check" {
+    run lua interpreter.lua < test/inputs/bools/if_bool
+    assert_output "false"
+}

@@ -118,7 +118,6 @@ function Compiler:codeExp(ast)
       self:codeExp(ast.size)
       self:addCode("newarray")
     elseif ast.tag == "binop" then
-      -- ALEX TODO
       self:codeExp(ast.e1)
       self:codeExp(ast.e2)
       self:addCode(ops[ast.op])
@@ -340,6 +339,31 @@ function Compiler:codeStat(ast)
       self:fixJmp2here(jmp)
       self:codeStat(ast.el)
       self:fixJmp2here(jmp2)
+    end
+  elseif ast.tag == "unless1" then
+    if ast.cond.e1 ~= nil and ast.cond.e2 ~= nil then
+      if ast.cond.e2.type == "s" then
+        if ast.cond.e1.type == "e" or ast.cond.e1.type == "n" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
+          print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
+          os.exit(1)
+        end
+      elseif ast.cond.e2.type == "n" then
+        if ast.cond.e1.type == "e" or ast.cond.e1.type == "s" or ast.cond.e1.type == "b" or ast.cond.e1.type == "f" or ast.cond.e1.type == "t" then
+          print(utils.comparison_type_check_err_str(ast.cond.e1, ast.cond.e2))
+          os.exit(1)
+        end
+      end
+    end
+    self:codeExp(ast.cond)
+    local jmp = self:codeJmpF("jmpZ")
+    self:codeStat(ast.th)
+    if ast.el == nil then
+      self:fixJmp2here(jmp)
+    else
+      local jmp2 = self:codeJmpF("jmp")
+      self:fixJmp2here(jmp2)
+      self:codeStat(ast.el)
+      self:fixJmp2here(jmp)
     end
   else
     error("invalid tree")

@@ -1,0 +1,9 @@
+function main_n () {
+    a_b = true
+
+    if a {
+     a = false   
+    }
+
+    return a
+}

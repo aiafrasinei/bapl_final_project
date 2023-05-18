@@ -1,0 +1,12 @@
+function main_n () {
+    a_b = false
+    flag_b = false
+
+    unless a {
+        flag = false   
+    } else {
+        flag = true
+    }
+
+    return flag
+}

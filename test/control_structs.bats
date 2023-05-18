@@ -24,3 +24,8 @@ setup() {
     run lua interpreter.lua < test/inputs/control_structs/elif
     assert_output --partial "2"
 }
+
+@test "unless" {
+    run lua interpreter.lua < test/inputs/control_structs/unless
+    assert_output --partial "true"
+}

@@ -39,7 +39,7 @@ New Features/Changes
         return test
     }
 
-    After assign the variable can be used without the _type.
+    After assign the variable can be used without the annotation _type.
 
     StackApi
 
@@ -107,6 +107,7 @@ In this section, describe the new features or changes that you have added to the
 
     - Optional type system
     - The stack operations described above
+    - Absence of value (nil) (example: a_e, a_s etc)
     - Unit tests using bash bats tool (this saved me a lot of times when i created regressions)
     - Exp supports bool and strings
     - @ can print strings
