@@ -1,0 +1,12 @@
+# rpn calculator
+
+function main_n () {
+    @ "Waiting for rpn expresion: "
+    while true {
+        INPUT
+        RPNEVAL 
+        PRINT
+    }
+
+    return 0
+}

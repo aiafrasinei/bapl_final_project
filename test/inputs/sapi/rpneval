@@ -1,5 +1,6 @@
 function main_n () {
-    RPNEVAL "1 2 + 3 +"
+    PUSH "1 2 + 3 +"
+    RPNEVAL
     SPRINT
     
     return 0

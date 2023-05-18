@@ -288,7 +288,6 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "s%" then
     self:addCode("s%")
   elseif ast.tag == "srpneval" then
-    self:codeExp(ast.exp)
     self:addCode("srpneval")
   elseif ast.tag == "seval" then
     self:addCode("seval")

@@ -133,7 +133,7 @@ local grammar_table = {
       + Rw("S*") / utils.node("s*")
       + Rw("S/") / utils.node("s/")
       + Rw("S%") / utils.node("s%")
-      + Rw("RPNEVAL") * exp / utils.node("srpneval", "exp")
+      + Rw("RPNEVAL") / utils.node("srpneval")
       + Rw("EVAL") / utils.node("seval")
       + Rw("SPRINT") / utils.node("sprint")
       + Rw("SUSE") * exp / utils.node("suse", "exp")
@@ -386,7 +386,7 @@ local function run(code, mem, stack, top, sapi)
     elseif code[pc] == "s%" then
       sapi:getStack(current_stack):modulo()
     elseif code[pc] == "srpneval" then
-      local rpnops = utils.split_string(stack[top]:gsub('"', ''), " ")
+      local rpnops = utils.split_string(sapi:getStack(current_stack):peekLast():gsub('"', ''), " ")
       for i = 1, #rpnops do
         if type(tonumber(rpnops[i])) == "number" then
           sapi:getStack(current_stack):push(rpnops[i])
