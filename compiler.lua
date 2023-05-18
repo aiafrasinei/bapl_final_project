@@ -89,40 +89,42 @@ function Compiler:codeCall(ast)
 end
 
 function Compiler:codeExp(ast)
-  if ast.tag == "number" then
-    self:addCode("push")
-    self:addCode(ast.val)
-  elseif ast.tag == "text" then
-    self:addCode("push")
-    self:addCode(ast.val)
-  elseif ast.tag == "bool" then
-    self:addCode("push")
-    self:addCode(ast.val)
-  elseif ast.tag == "call" then
-    self:codeCall(ast)
-  elseif ast.tag == "variable" then
-    local idx = self:findLocal(ast.var)
-    if idx then
-      self:addCode("loadL")
-      self:addCode(idx)
+  if ast ~= nil then
+    if ast.tag == "number" then
+      self:addCode("push")
+      self:addCode(ast.val)
+    elseif ast.tag == "text" then
+      self:addCode("push")
+      self:addCode(ast.val)
+    elseif ast.tag == "bool" then
+      self:addCode("push")
+      self:addCode(ast.val)
+    elseif ast.tag == "call" then
+      self:codeCall(ast)
+    elseif ast.tag == "variable" then
+      local idx = self:findLocal(ast.var)
+      if idx then
+        self:addCode("loadL")
+        self:addCode(idx)
+      else
+        self:addCode("load")
+        self:addCode(self:var2num(ast.var))
+      end
+    elseif ast.tag == "indexed" then
+      self:codeExp(ast.array)
+      self:codeExp(ast.index)
+      self:addCode("getarray")
+    elseif ast.tag == "new" then
+      self:codeExp(ast.size)
+      self:addCode("newarray")
+    elseif ast.tag == "binop" then
+      -- ALEX TODO
+      self:codeExp(ast.e1)
+      self:codeExp(ast.e2)
+      self:addCode(ops[ast.op])
     else
-      self:addCode("load")
-      self:addCode(self:var2num(ast.var))
+      error("invalid tree")
     end
-  elseif ast.tag == "indexed" then
-    self:codeExp(ast.array)
-    self:codeExp(ast.index)
-    self:addCode("getarray")
-  elseif ast.tag == "new" then
-    self:codeExp(ast.size)
-    self:addCode("newarray")
-  elseif ast.tag == "binop" then
-    -- ALEX TODO
-    self:codeExp(ast.e1)
-    self:codeExp(ast.e2)
-    self:addCode(ops[ast.op])
-  else
-    error("invalid tree")
   end
 end
 
@@ -130,51 +132,53 @@ function Compiler:codeAssgn(ast)
   local lhs = ast.lhs
   if lhs.tag == "variable" then
     -- TODO TYPE CHECKING
-    if ast.exp.tag == "text" then
-      if ast.lhs.type == "e" or ast.lhs.type == "n" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
-        print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
-        os.exit(1)
-      end
-    elseif ast.exp.tag == "number" then
-      if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
-        print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
-        os.exit(1)
-      end
-    elseif ast.exp.tag == "bool" then
-      if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
-        print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
-        os.exit(1)
-      end
-    end
-
-    if ast.exp.tag == "call" then
-      if #self.funcs[ast.exp.fname].params ~= #ast.exp.args then
-        print("ERR: Function call " .. ast.exp.fname .. " with " ..
-          #ast.exp.args .. " parameters (function definition has " .. #self.funcs[ast.exp.fname].params .. ")")
-        os.exit(1)
-      else
-        for i = 1, #ast.exp.args do
-          if ast.exp.args[i].tag == 'number' and self.funcs[ast.exp.fname].params[i].type ~= 'n' then
-            print("ERR: Function call " ..
-              ast.exp.fname ..
-              " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
-            os.exit(1)
-          end
-          if ast.exp.args[i].tag == 'string' and self.funcs[ast.exp.fname].params[i].type ~= 's' then
-            print("ERR: Function call " ..
-              ast.exp.fname ..
-              " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
-            os.exit(1)
-          end
+    if ast.exp ~= nil then
+      if ast.exp.tag == "text" then
+        if ast.lhs.type == "e" or ast.lhs.type == "n" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+          print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+          os.exit(1)
+        end
+      elseif ast.exp.tag == "number" then
+        if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "b" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+          print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+          os.exit(1)
+        end
+      elseif ast.exp.tag == "bool" then
+        if ast.lhs.type == "e" or ast.lhs.type == "s" or ast.lhs.type == "n" or ast.lhs.type == "f" or ast.lhs.type == "t" then
+          print(utils.assign_type_check_err_str(ast.lhs.var, ast.lhs.type, ast.exp.tag))
+          os.exit(1)
         end
       end
 
-      if self.funcs[ast.exp.fname].ret ~= ast.lhs.type then
-        print("ERR: Type check failed on function call, asignement (var: " ..
-          ast.lhs.var ..
-          " type: " ..
-          ast.lhs.type .. ") = (funct: " .. ast.exp.fname .. " type: " .. self.funcs[ast.exp.fname].ret .. ")")
-        os.exit(1)
+      if ast.exp.tag == "call" then
+        if #self.funcs[ast.exp.fname].params ~= #ast.exp.args then
+          print("ERR: Function call " .. ast.exp.fname .. " with " ..
+            #ast.exp.args .. " parameters (function definition has " .. #self.funcs[ast.exp.fname].params .. ")")
+          os.exit(1)
+        else
+          for i = 1, #ast.exp.args do
+            if ast.exp.args[i].tag == 'number' and self.funcs[ast.exp.fname].params[i].type ~= 'n' then
+              print("ERR: Function call " ..
+                ast.exp.fname ..
+                " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
+              os.exit(1)
+            end
+            if ast.exp.args[i].tag == 'string' and self.funcs[ast.exp.fname].params[i].type ~= 's' then
+              print("ERR: Function call " ..
+                ast.exp.fname ..
+                " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
+              os.exit(1)
+            end
+          end
+        end
+
+        if self.funcs[ast.exp.fname].ret ~= ast.lhs.type then
+          print("ERR: Type check failed on function call, asignement (var: " ..
+            ast.lhs.var ..
+            " type: " ..
+            ast.lhs.type .. ") = (funct: " .. ast.exp.fname .. " type: " .. self.funcs[ast.exp.fname].ret .. ")")
+          os.exit(1)
+        end
       end
     end
 
@@ -239,6 +243,8 @@ function Compiler:codeStat(ast)
     self:addCode("sdepth")
   elseif ast.tag == "sprint" then
     self:addCode("sprint")
+  elseif ast.tag == "tosprint" then
+    self:addCode("tosprint")
   elseif ast.tag == "speek" then
     self:codeExp(ast.exp)
     self:addCode("speek")
@@ -281,6 +287,8 @@ function Compiler:codeStat(ast)
   elseif ast.tag == "srpneval" then
     self:codeExp(ast.exp)
     self:addCode("srpneval")
+  elseif ast.tag == "seval" then
+    self:addCode("seval")
   elseif ast.tag == "not" then
     self:codeExp(ast.exp)
     self:addCode("not")

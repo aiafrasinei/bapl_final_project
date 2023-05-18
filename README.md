@@ -52,7 +52,8 @@ New Features/Changes
     API as language statements:
 
     stack operations:
-    PUSH, POP, DEPTH, PRINT, PEEK
+    PUSH     : push a string or number
+    POP, DEPTH, PRINT, PEEK
 
     stack juggling:
     notation meaning ( initial stack - after operation stack)
@@ -81,7 +82,7 @@ New Features/Changes
 
     Can be used as a reverse polish notation calculator.
 
-    arithmetics:
+    Arithmetics:
     Expects 2 elements on the current stack, pops the 2 elements and push the result.
     S+ - addition        - ( n1 n2 — sum )
     S- - substraction    - ( n1 n2 — diff )
@@ -89,29 +90,36 @@ New Features/Changes
     S/ - division        - ( n1 n2 — quot )
     S% - mod             - ( n1 n2 — rem )
 
+    PRINT  - print the top of current stack
+    SPRINT - print the content of the current stack
+
     RPNEVAL "rpn_ops"    - reverse polish notation evaluation
     Expects a rpn expression (applies all the arithmetic ops using the current stack)
     example: RPNEVAL "1 2 + 3 +" will leave the result 6 at the top
+
+    EVAL - expects a valid lua code on the top of the current stack,
+    evaluates the top of stack element using lua (load)
+    Remove the tos and add the result
 
 In this section, describe the new features or changes that you have added to the programming language. This should include:
 
     Detailed explanation of each feature/change
 
+    - Optional type system
+    - The stack operations described above
     - Unit tests using bash bats tool (this saved me a lot of times when i created regressions)
     - Exp supports bool and strings
     - @ can print strings
     - Remove semicolons from syntax
     - Bash like comparison operators (lt, gt, le, ge, eq, ne)
     - Forward function declarations and error check for multiple declarations
-    - The stack operations described above
-    - Optional type system
 
-    Type checks on assignment,if and function call return.
+    Type checks on: assignment,if,function call return, function call params.
     If you dont use _type when declaring variables no type checks are performed.
 
 Any trade-offs or limitations you are aware of
 
-    No time to do the type check of function parameters, but all the information is in the ast to do it.
+    Type checks errors could use a better format.
     I didnt add the optional initialization for last function parameter, i dont like that feature.
 
 Future
@@ -121,6 +129,7 @@ In this section, discuss the future of your language / DSL, such as deployabilit
 What would be needed to get this project ready for production?
 
     I really like this syntax, to be production ready i need to write a transpiler to a different language like c,java.
+    Better error reporting.
     At least thats my plan for the future.
 
 How would you extend this project to do something more? Are there other features you’d like? How would you go about adding them?
@@ -145,10 +154,11 @@ Self assessment
 
 Have you gone beyond the base requirements? How so?
 
-    Type system.
+    Start of a type system.
     The stack api.
     Proper unit tests that check the output of the program.
     Organization of the code.
+    Strings.
     Examples directory (i used some problems from https://projecteuler.net)
 
 References

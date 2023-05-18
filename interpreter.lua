@@ -41,7 +41,7 @@ local reserved = { "return", "if", "else", "elif", "while", "new", "function", "
   "DUP", "SWAP", "OVER", "TUCK", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
   "S+", "S-", "S*", "S/", "S%",
   "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA",
-  "RPNEVAL" }
+  "RPNEVAL", "EVAL", "PRINT", "INPUT" }
 
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
@@ -106,7 +106,7 @@ local grammar_table = {
       (Rw("else") * block) ^ -1
       / utils.node("if1", "cond", "th", "el")
       + Rw("while") * exp * block / utils.node("while1", "cond", "body")
-      + lhs * T "=" * exp / utils.node("assgn", "lhs", "exp")
+      + ((lhs * T "=" * exp) + lhs) / utils.node("assgn", "lhs", "exp")
       + Rw("@") * (exp + text) / utils.node("print", "exp")
       + Rw("!") * exp / utils.node("not", "exp")
       + Rw("PUSH") * exp / utils.node("spush", "exp")
@@ -132,6 +132,7 @@ local grammar_table = {
       + Rw("S/") / utils.node("s/")
       + Rw("S%") / utils.node("s%")
       + Rw("RPNEVAL") * exp / utils.node("srpneval", "exp")
+      + Rw("EVAL") / utils.node("seval")
       + Rw("SPRINT") / utils.node("sprint")
       + Rw("SUSE") * exp / utils.node("suse", "exp")
       + Rw("SADD") * exp / utils.node("sadd", "exp")
@@ -139,6 +140,7 @@ local grammar_table = {
       + Rw("SREP") * exp / utils.node("srep", "exp")
       + Rw("SCLEAR") * exp / utils.node("sclear", "exp")
       + Rw("SRA") / utils.node("sra")
+      + Rw("PRINT") / utils.node("tosprint")
       + call
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
@@ -398,8 +400,14 @@ local function run(code, mem, stack, top, sapi)
           sapi:getStack(current_stack):modulo()
         end
       end
+    elseif code[pc] == "seval" then
+      local fs = load(sapi:getStack(current_stack):peekLast():gsub('"', ''))
+      sapi:getStack(current_stack):pop()
+      sapi:getStack(current_stack):push(fs())
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
+    elseif code[pc] == "tosprint" then
+      print(sapi:getStack(current_stack):peekLast())
     elseif code[pc] == "suse" then
       current_stack = stack[top]:gsub('"', '')
       if DEBUG then

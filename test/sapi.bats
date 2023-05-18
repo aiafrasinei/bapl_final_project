@@ -115,3 +115,8 @@ setup() {
     run lua interpreter.lua < test/inputs/sapi/rpneval
     assert_output --partial "6"
 }
+
+@test "eval" {
+    run lua interpreter.lua < test/inputs/sapi/eval
+    assert_output --partial "2"
+}

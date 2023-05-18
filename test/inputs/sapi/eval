@@ -1,0 +1,7 @@
+function main_n () {
+    PUSH "function sum (a, b) return a + b end return sum(1,1)"
+    EVAL
+    SPRINT
+
+    return 0
+}
