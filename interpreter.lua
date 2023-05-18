@@ -419,9 +419,11 @@ local function run(code, mem, stack, top, sapi)
         end
       end
     elseif code[pc] == "seval" then
-      local fs = load(sapi:getStack(current_stack):peekLast():gsub('"', ''))
+      local params = sapi:getStack(current_stack):peekLast()
       sapi:getStack(current_stack):pop()
-      sapi:getStack(current_stack):push(fs())
+      local fs = load(sapi:getStack(current_stack):peekLast():gsub('"', ''))(params)
+      sapi:getStack(current_stack):pop()
+      sapi:getStack(current_stack):push(fs)
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "tosprint" then

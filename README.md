@@ -1,33 +1,42 @@
 # bapl final project
 
 To run an input file: lua interpreter.lua input
+
 Interactive mode: lua interpreter -i
+
 Read TESTS.md for how to run the tests
 
 Final Project Report: constanta
+
 Language Syntax
 
 In this section, describe the overall syntax of your language.
+
 New Features/Changes
 
     Selene language with some modifications.
 
     Variables names with types:
+    ``` 
     "varname"_"type"
-    
+    ``` 
+
+    ``` 
     _e - empty
     _b - boolean
     _n - number
     _s - string
     _f - function
     _t - table
+    ``` 
 
     example variables:
+    ```
     temp_b = false
     i_n = 1000
     str_s = "tes"
     nr_n = 10
-
+    ```
     example functions:
     function factorial_n (nr_n) {
         if nr {
