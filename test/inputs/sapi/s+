@@ -1,7 +1,7 @@
 function main_n () {
     PUSH 1
     PUSH 2
-    S+
+    ADD
     SPRINT
     
     return 0

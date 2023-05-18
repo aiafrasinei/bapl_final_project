@@ -1,7 +1,7 @@
 function main_n () {
     PUSH 2
     PUSH 2
-    S%
+    MOD
     SPRINT
     
     return 0

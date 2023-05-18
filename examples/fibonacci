@@ -1,0 +1,28 @@
+# print fibonacci
+
+function main_n () {
+    i_n = 1
+    max_n
+    prev_n = 1
+
+    @ "Number of fibonacci numbers: "
+    INPUT
+    max = "$default'tos"
+    DROP
+
+    @ "Results: "
+    PUSH 0
+    PUSH 1
+    while i lt max {
+        prev = "$default'1"        
+        ADD
+        PUSH prev
+        prev = "$default'tos"
+        
+        PRINT 
+
+        i = i + 1
+    }
+
+    return 0
+}

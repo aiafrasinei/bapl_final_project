@@ -1,0 +1,7 @@
+function main_n () {
+    PUSH "test"
+    test_s = "$default'1"
+    @ test
+    
+    return 0
+}

@@ -120,3 +120,8 @@ setup() {
     run lua interpreter.lua test/inputs/sapi/eval
     assert_output --partial "2"
 }
+
+@test "stack to variable" {
+    run lua interpreter.lua test/inputs/sapi/sapi_to_var
+    assert_output --partial "test"
+}

@@ -277,16 +277,16 @@ function Compiler:codeStat(ast)
     self:addCode("s2rot")
   elseif ast.tag == "s2minrot" then
     self:addCode("s2minrot")
-  elseif ast.tag == "s+" then
-    self:addCode("s+")
-  elseif ast.tag == "s-" then
-    self:addCode("s-")
-  elseif ast.tag == "s*" then
-    self:addCode("s*")
-  elseif ast.tag == "s/" then
-    self:addCode("s/")
-  elseif ast.tag == "s%" then
-    self:addCode("s%")
+  elseif ast.tag == "splus" then
+    self:addCode("splus")
+  elseif ast.tag == "sminus" then
+    self:addCode("sminus")
+  elseif ast.tag == "smul" then
+    self:addCode("smul")
+  elseif ast.tag == "sdiv" then
+    self:addCode("sdiv")
+  elseif ast.tag == "smod" then
+    self:addCode("smod")
   elseif ast.tag == "srpneval" then
     self:addCode("srpneval")
   elseif ast.tag == "seval" then

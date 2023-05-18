@@ -107,6 +107,8 @@ New Features/Changes
     evaluates the top of stack element using lua (load)
     Remove the tos and add the result
 
+    test_s = "$default'tos"
+
 In this section, describe the new features or changes that you have added to the programming language. This should include:
 
     Detailed explanation of each feature/change

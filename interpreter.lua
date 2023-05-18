@@ -39,7 +39,7 @@ local bool = (lpeg.P("true") + lpeg.P("false")) / utils.node("bool", "val") * sp
 local reserved = { "return", "if", "unless", "else", "elif", "while", "new", "function", "var", "@", "!",
   "PUSH", "POP", "DEPTH", "DROP", "PEEK",
   "DUP", "SWAP", "OVER", "TUCK", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
-  "S+", "S-", "S*", "S/", "S%",
+  "ADD", "SUB", "MUL", "DIV", "MOD",
   "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA",
   "RPNEVAL", "EVAL", "PRINT", "INPUT" }
 
@@ -128,11 +128,11 @@ local grammar_table = {
       + Rw("2OVER") / utils.node("s2over")
       + Rw("2ROT") / utils.node("s2rot")
       + Rw("2MINROT") / utils.node("s2minrot")
-      + Rw("S+") / utils.node("s+")
-      + Rw("S-") / utils.node("s-")
-      + Rw("S*") / utils.node("s*")
-      + Rw("S/") / utils.node("s/")
-      + Rw("S%") / utils.node("s%")
+      + Rw("ADD") / utils.node("splus")
+      + Rw("SUB") / utils.node("sminus")
+      + Rw("MUL") / utils.node("smul")
+      + Rw("DIV") / utils.node("sdiv")
+      + Rw("MOD") / utils.node("smod")
       + Rw("RPNEVAL") / utils.node("srpneval")
       + Rw("EVAL") / utils.node("seval")
       + Rw("SPRINT") / utils.node("sprint")
@@ -261,7 +261,7 @@ local function run(code, mem, stack, top, sapi)
       stack[top - 1] = stack[top - 1] ^ stack[top]
       top = top - 1
     elseif code[pc] == "less_then" then
-      if (stack[top - 1] < stack[top]) then
+      if (stack[top - 1] < tonumber(stack[top])) then
         comp_result = 1
       end
       stack[top - 1] = comp_result
@@ -314,6 +314,21 @@ local function run(code, mem, stack, top, sapi)
       top = top + 1
       stack[top] = mem[id]
     elseif code[pc] == "store" then
+      -- $stack_name'stack pos
+      if type(stack[top]) == "string" then
+        if string.sub(stack[top]:gsub('"', ''), 1, 1) == "$" then
+          local pos = string.find(stack[top], "'")
+          local stackname = string.sub(stack[top], 3, pos - 1)
+          local stackpos = string.sub(stack[top], pos + 1, #stack[top] - 1)
+
+          if stackpos == "tos" then
+            stack[top] = sapi:getStack(stackname):peekLast()
+          else
+            stack[top] = sapi:getStack(stackname):peek(tonumber(stackpos))
+          end
+        end
+      end
+
       pc = pc + 1
       local id = code[pc]
       mem[id] = stack[top]
@@ -375,15 +390,15 @@ local function run(code, mem, stack, top, sapi)
       sapi:getStack(current_stack):tworot()
     elseif code[pc] == "s2minrot" then
       sapi:getStack(current_stack):twominrot()
-    elseif code[pc] == "s+" then
+    elseif code[pc] == "splus" then
       sapi:getStack(current_stack):add()
-    elseif code[pc] == "s-" then
+    elseif code[pc] == "sminus" then
       sapi:getStack(current_stack):minus()
-    elseif code[pc] == "s*" then
+    elseif code[pc] == "smul" then
       sapi:getStack(current_stack):multiply()
-    elseif code[pc] == "s/" then
+    elseif code[pc] == "sdiv" then
       sapi:getStack(current_stack):division()
-    elseif code[pc] == "s%" then
+    elseif code[pc] == "smod" then
       sapi:getStack(current_stack):modulo()
     elseif code[pc] == "srpneval" then
       local rpnops = utils.split_string(sapi:getStack(current_stack):peekLast():gsub('"', ''), " ")

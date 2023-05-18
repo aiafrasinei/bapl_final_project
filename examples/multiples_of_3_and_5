@@ -20,5 +20,7 @@ function main_n () {
         i = i + 1
     }
 
-    return sum - 1
+    @ sum - 1
+
+    return 0
 }
