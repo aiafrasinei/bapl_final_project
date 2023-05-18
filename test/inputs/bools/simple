@@ -2,5 +2,7 @@ function main_n () {
     a_b = false
     b_b = true
 
-    return b
+    @ b
+
+    return 0
 }

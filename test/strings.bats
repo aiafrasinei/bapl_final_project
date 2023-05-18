@@ -11,11 +11,11 @@ setup() {
 }
 
 @test "simple string" {
-    run lua interpreter.lua < test/inputs/strings/simple
+    run lua interpreter.lua test/inputs/strings/simple
     assert_output "\""temp"\""
 }
 
 @test "string param" {
-    run lua interpreter.lua < test/inputs/strings/params
+    run lua interpreter.lua test/inputs/strings/params
     assert_output "\""test"\""
 }

@@ -11,11 +11,11 @@ setup() {
 }
 
 @test "simple" {
-    run lua interpreter.lua < test/inputs/arrays/simple
+    run lua interpreter.lua test/inputs/arrays/simple
     assert_output "1"
 }
 
 @test "multi" {
-    run lua interpreter.lua < test/inputs/arrays/multi
+    run lua interpreter.lua test/inputs/arrays/multi
     assert_output "38"
 }

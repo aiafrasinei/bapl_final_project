@@ -8,5 +8,5 @@ function factorial_n (nr_n) {
 
 function main_n () {
     test_s = factorial(6)
-    return test
+    return 0
 }

@@ -4,5 +4,5 @@ function sum_n (a_n, b_n) {
 
 function main_n () {
     res_n = sum(1)
-    return res
+    return 0
 }

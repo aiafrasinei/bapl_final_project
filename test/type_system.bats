@@ -11,56 +11,56 @@ setup() {
 }
 
 @test "type check error s to b" {
-    run lua interpreter.lua < test/inputs/type_system/assign_s_to_b
+    run lua interpreter.lua test/inputs/type_system/assign_s_to_b
     assert_output "ERR: Type check failed on assign, (var: b type: b) attempt to assign text"
 }
 
 @test "type check error s to n" {
-    run lua interpreter.lua < test/inputs/type_system/assign_s_to_n
+    run lua interpreter.lua test/inputs/type_system/assign_s_to_n
     assert_output "ERR: Type check failed on assign, (var: b type: n) attempt to assign text"
 }
 
 @test "type check error s to e" {
-    run lua interpreter.lua < test/inputs/type_system/assign_s_to_e
+    run lua interpreter.lua test/inputs/type_system/assign_s_to_e
     assert_output "ERR: Type check failed on assign, (var: b type: e) attempt to assign text"
 }
 
 @test "assign s to s" {
-    run lua interpreter.lua < test/inputs/type_system/assign_s_to_s
+    run lua interpreter.lua test/inputs/type_system/assign_s_to_s
     assert_output "\""temp"\""
 }
 
 @test "comparison n to s" {
-    run lua interpreter.lua < test/inputs/type_system/comparison_n_to_s
+    run lua interpreter.lua test/inputs/type_system/comparison_n_to_s
     assert_output "ERR: Type check failed on if comparison, (var: a type: n) with (var: b type: s)"
 }
 
 @test "comparison s to n" {
-    run lua interpreter.lua < test/inputs/type_system/comparison_s_to_n
+    run lua interpreter.lua test/inputs/type_system/comparison_s_to_n
     assert_output "ERR: Type check failed on if comparison, (var: b type: s) with (var: a type: n)"
 }
 
 @test "comparison b to s" {
-    run lua interpreter.lua < test/inputs/type_system/comparison_b_to_s
+    run lua interpreter.lua test/inputs/type_system/comparison_b_to_s
     assert_output "ERR: Type check failed on if comparison, (var: a type: b) with (var: b type: s)"
 }
 
 @test "unitialized var" {
-    run lua interpreter.lua < test/inputs/type_system/uninit_var
+    run lua interpreter.lua test/inputs/type_system/uninit_var
     assert_output --partial "11"
 }
 
 @test "function call return check" {
-    run lua interpreter.lua < test/inputs/type_system/assign_f_to_s
+    run lua interpreter.lua test/inputs/type_system/assign_f_to_s
     assert_output "ERR: Type check failed on function call, asignement (var: test type: s) = (funct: factorial type: n)"
 }
 
 @test "function with wrong number of params" {
-    run lua interpreter.lua < test/inputs/type_system/funct_with_wrong_nr_params
+    run lua interpreter.lua test/inputs/type_system/funct_with_wrong_nr_params
     assert_output "ERR: Function call sum with 1 parameters (function definition has 2)"
 }
 
 @test "mismatch function type parameters" {
-    run lua interpreter.lua < test/inputs/type_system/mismatch_function_type_params
+    run lua interpreter.lua test/inputs/type_system/mismatch_function_type_params
     assert_output "ERR: Function call sum parameter type mismatch (expected type: s)"
 }

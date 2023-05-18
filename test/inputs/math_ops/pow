@@ -1,5 +1,6 @@
 function main_n () {
     b_n = 2 ^ 3
+    @ b
     
-    return b
+    return 0
 }

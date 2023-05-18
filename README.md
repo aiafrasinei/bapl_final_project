@@ -1,5 +1,9 @@
 # bapl final project
 
+To run an input file: lua interpreter.lua input
+Interactive mode: lua interpreter -i
+Read TESTS.md for how to run the tests
+
 Final Project Report: constanta
 Language Syntax
 
@@ -10,7 +14,7 @@ New Features/Changes
 
     Variables names with types:
     "varname"_"type"
-
+    
     _e - empty
     _b - boolean
     _n - number
@@ -39,7 +43,8 @@ New Features/Changes
         return test
     }
 
-    After assign the variable can be used without the annotation _type.
+    The _type annotation is only used on assignement or function parameters.
+    After assign the variable can be used without the annotation.
 
     StackApi
 
@@ -92,6 +97,7 @@ New Features/Changes
 
     PRINT  - print the top of current stack
     SPRINT - print the content of the current stack
+    INPUT  - read from stdin and put the value on the top of the current stack 
 
     RPNEVAL "rpn_ops"    - reverse polish notation evaluation
     Expects a rpn expression (applies all the arithmetic ops using the current stack)
@@ -108,6 +114,7 @@ In this section, describe the new features or changes that you have added to the
     - Optional type system
     - The stack operations described above
     - Absence of value (nil) (example: a_e, a_s etc)
+    - Unless control structure
     - Unit tests using bash bats tool (this saved me a lot of times when i created regressions)
     - Exp supports bool and strings
     - @ can print strings

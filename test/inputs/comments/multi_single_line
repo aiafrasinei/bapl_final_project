@@ -2,6 +2,7 @@ function main_n () {
     # this is a comment
     # another comment
     # last one
-
+    @ 0
+    
     return 0
 }

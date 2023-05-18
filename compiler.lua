@@ -156,17 +156,19 @@ function Compiler:codeAssgn(ast)
           os.exit(1)
         else
           for i = 1, #ast.exp.args do
-            if ast.exp.args[i].tag == 'number' and self.funcs[ast.exp.fname].params[i].type ~= 'n' then
-              print("ERR: Function call " ..
-                ast.exp.fname ..
-                " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
-              os.exit(1)
-            end
-            if ast.exp.args[i].tag == 'string' and self.funcs[ast.exp.fname].params[i].type ~= 's' then
-              print("ERR: Function call " ..
-                ast.exp.fname ..
-                " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
-              os.exit(1)
+            if self.funcs[ast.exp.fname].params[i].type ~= nil then
+              if ast.exp.args[i].tag == 'number' and self.funcs[ast.exp.fname].params[i].type ~= 'n' then
+                print("ERR: Function call " ..
+                  ast.exp.fname ..
+                  " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
+                os.exit(1)
+              end
+              if ast.exp.args[i].tag == 'string' and self.funcs[ast.exp.fname].params[i].type ~= 's' then
+                print("ERR: Function call " ..
+                  ast.exp.fname ..
+                  " parameter type mismatch (expected type: " .. self.funcs[ast.exp.fname].params[i].type .. ")")
+                os.exit(1)
+              end
             end
           end
         end
@@ -244,6 +246,8 @@ function Compiler:codeStat(ast)
     self:addCode("sprint")
   elseif ast.tag == "tosprint" then
     self:addCode("tosprint")
+  elseif ast.tag == "sinput" then
+    self:addCode("sinput")
   elseif ast.tag == "speek" then
     self:codeExp(ast.exp)
     self:addCode("speek")

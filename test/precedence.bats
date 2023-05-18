@@ -11,26 +11,26 @@ setup() {
 }
 
 @test "addition multiplication" {
-    run lua interpreter.lua < test/inputs/precedence/add_mul
+    run lua interpreter.lua test/inputs/precedence/add_mul
     assert_output "8"
 }
 
 @test "multiplication power" {
-    run lua interpreter.lua < test/inputs/precedence/mul_pow
+    run lua interpreter.lua test/inputs/precedence/mul_pow
     assert_output "16.0"
 }
 
 @test "addition power" {
-    run lua interpreter.lua < test/inputs/precedence/add_pow
+    run lua interpreter.lua test/inputs/precedence/add_pow
     assert_output "6.0"
 }
 
 @test "minus number addition substraction" {
-    run lua interpreter.lua < test/inputs/precedence/minus_add_sub
+    run lua interpreter.lua test/inputs/precedence/minus_add_sub
     assert_output "-4"
 }
 
 @test "unary operator" {
-    run lua interpreter.lua < test/inputs/precedence/unary_op
+    run lua interpreter.lua test/inputs/precedence/unary_op
     assert_output "-3"
 }

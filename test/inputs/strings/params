@@ -5,6 +5,7 @@ function err_s (e_s)
 
 function main_n () {
     b_s = err("test")
+    @ b
     
-    return b
+    return 0
 }

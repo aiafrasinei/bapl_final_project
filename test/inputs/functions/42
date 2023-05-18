@@ -1,3 +1,10 @@
-function main_n () {
+function answer_n () {
     return 42
+}
+
+function main_n () {
+    rv_n = answer()
+    @ rv
+
+    return 0
 }

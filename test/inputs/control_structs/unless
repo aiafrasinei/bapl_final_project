@@ -8,5 +8,7 @@ function main_n () {
         flag = true
     }
 
-    return flag
+    @ flag
+    
+    return 0
 }

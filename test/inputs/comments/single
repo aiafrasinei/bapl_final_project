@@ -1,4 +1,6 @@
 function main_n () {
     # this is a comment
+    @ 0
+    
     return 0
 }

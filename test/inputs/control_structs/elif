@@ -10,5 +10,7 @@ function main_n () {
         b = 3 
     }
 
-    return b
+    @ b
+    
+    return 0
 }

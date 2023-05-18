@@ -1,5 +1,6 @@
 function main_n () {
     c_n = 6 % 2
+    @ c
     
-    return c
+    return 0
 }

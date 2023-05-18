@@ -13,5 +13,8 @@ function factorial2_n (n)
 function factorial2_n (n)
 
 function main_n () {
-    return factorial(6)
+    rv_n = factorial(6)
+    @ rv
+    
+    return 0
 }

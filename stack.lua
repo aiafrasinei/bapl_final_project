@@ -228,7 +228,7 @@ function Stack:modulo()
         return nil
     end
 
-    local res = self.stack[#self.stack] / self.stack[#self.stack - 1]
+    local res = self.stack[#self.stack] % self.stack[#self.stack - 1]
     self:stackCleanForOp()
     table.insert(self.stack, res)
 end

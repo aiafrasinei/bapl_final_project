@@ -1,6 +1,7 @@
 function main_n () {
     c = "temp"
     b_s = c
+    @ b
     
-    return b
+    return 0
 }

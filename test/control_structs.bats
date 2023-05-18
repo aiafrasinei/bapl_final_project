@@ -11,21 +11,21 @@ setup() {
 }
 
 @test "if" {
-    run lua interpreter.lua < test/inputs/control_structs/if
+    run lua interpreter.lua test/inputs/control_structs/if
     assert_output "12"
 }
 
 @test "if else" {
-    run lua interpreter.lua < test/inputs/control_structs/if_else
+    run lua interpreter.lua test/inputs/control_structs/if_else
     assert_output --partial "12"
 }
 
 @test "elif" {
-    run lua interpreter.lua < test/inputs/control_structs/elif
+    run lua interpreter.lua test/inputs/control_structs/elif
     assert_output --partial "2"
 }
 
 @test "unless" {
-    run lua interpreter.lua < test/inputs/control_structs/unless
+    run lua interpreter.lua test/inputs/control_structs/unless
     assert_output --partial "true"
 }

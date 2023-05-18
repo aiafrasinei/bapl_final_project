@@ -1,5 +1,6 @@
 function main_n () {
     a_n = 2 lt 3
+    @ a
     
-    return a
+    return 0
 }

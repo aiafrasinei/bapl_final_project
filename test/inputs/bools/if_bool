@@ -5,5 +5,7 @@ function main_n () {
      a = false   
     }
 
-    return a
+    @ a
+
+    return 0
 }

@@ -1,5 +1,14 @@
-function main_n () {
-    a_s
+function factorial_n (n) {
+    if n {
+        return n * factorial(n-1)
+    } else {
+        return 1
+    }
+}
 
-    return a
+function main_n () {
+    rv_n = factorial(6)
+    @ rv
+    
+    return 0
 }

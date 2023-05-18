@@ -11,36 +11,36 @@ setup() {
 }
 
 @test "answer" {
-    run lua interpreter.lua < test/inputs/functions/42
+    run lua interpreter.lua test/inputs/functions/42
     assert_output "42"
 }
 
 @test "fact" {
-    run lua interpreter.lua < test/inputs/functions/fact
+    run lua interpreter.lua test/inputs/functions/fact
     assert_output "720"
 }
 
 @test "forwad decl ok" {
-    run lua interpreter.lua < test/inputs/functions/fwd_decl_ok
+    run lua interpreter.lua test/inputs/functions/fwd_decl_ok
     assert_output "720"
 }
 
 @test "multiple fwd declarations" {
-    run lua interpreter.lua < test/inputs/functions/multiple_fwd_decl
+    run lua interpreter.lua test/inputs/functions/multiple_fwd_decl
     assert_output --partial "ERR: multiple forward declarations for function factorial"
 }
 
 @test "fact with types" {
-    run lua interpreter.lua < test/inputs/functions/fact_with_types
+    run lua interpreter.lua test/inputs/functions/fact_with_types
     assert_output "720"
 }
 
 @test "sum" {
-    run lua interpreter.lua < test/inputs/functions/sum
+    run lua interpreter.lua test/inputs/functions/sum
     assert_output "2"
 }
 
 @test "multiple params" {
-    run lua interpreter.lua < test/inputs/functions/multiple_params
+    run lua interpreter.lua test/inputs/functions/multiple_params
     assert_output "3"
 }

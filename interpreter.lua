@@ -143,6 +143,7 @@ local grammar_table = {
       + Rw("SCLEAR") * exp / utils.node("sclear", "exp")
       + Rw("SRA") / utils.node("sra")
       + Rw("PRINT") / utils.node("tosprint")
+      + Rw("INPUT") / utils.node("sinput")
       + call
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
@@ -410,6 +411,9 @@ local function run(code, mem, stack, top, sapi)
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "tosprint" then
       print(sapi:getStack(current_stack):peekLast())
+    elseif code[pc] == "sinput" then
+      local ins = io.read()
+      sapi:getStack(current_stack):push(ins)
     elseif code[pc] == "suse" then
       current_stack = stack[top]:gsub('"', '')
       if DEBUG then
@@ -435,8 +439,16 @@ end
 
 local sapi = StackApi:new()
 current_stack = "default";
+input = ""
 
-local input = io.read("a")
+if arg[1] == "-i" then
+  input = io.read("a")
+else
+  local f = assert(io.open(arg[1], "r"))
+  input = f:read("*all")
+  f:close()
+end
+
 --print(lpeg.match(lpeg.P(gram), input))
 
 local ast = parse(input)
@@ -448,4 +460,3 @@ local code = compile(ast)
 local stack = {}
 local mem = {}
 run(code, mem, stack, 0, sapi)
-print(stack[1])

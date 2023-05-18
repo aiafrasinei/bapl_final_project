@@ -1,5 +1,6 @@
 function main_n () {
     a_n = 6 / 2
-    
-    return a
+    @ a
+
+    return 0
 }

@@ -8,5 +8,7 @@ function main_n () {
         b = 12 
     }
 
-    return b
+    @ b
+    
+    return 0
 }

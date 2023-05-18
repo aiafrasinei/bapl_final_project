@@ -6,5 +6,5 @@ function main_n () {
         b = "tes"
     }
 
-    return b
+    return 0
 }
