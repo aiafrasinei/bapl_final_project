@@ -19,3 +19,8 @@ setup() {
     run lua interpreter.lua test/inputs/bools/if_bool
     assert_output "false"
 }
+
+@test "bool if corner" {
+    run lua interpreter.lua test/inputs/bools/if_corner
+    assert_output "false"
+}

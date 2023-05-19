@@ -41,7 +41,7 @@ local reserved = { "return", "if", "unless", "else", "elif", "while", "new", "fu
   "DUP", "SWAP", "OVER", "TUCK", "ROT", "MINROT", "2DROP", "2SWAP", "2DUP", "2OVER", "2ROT", "2MINROT",
   "ADD", "SUB", "MUL", "DIV", "MOD",
   "SPRINT", "SUSE", "SADD", "SRM", "SREP", "SCLEAR", "SRA",
-  "RPNEVAL", "EVAL", "PRINT", "INPUT" }
+  "RPNEVAL", "EVAL", "PRINT", "INPUT", "FPUSH" }
 
 local excluded = lpeg.P(false)
 for i = 1, #reserved do
@@ -144,6 +144,7 @@ local grammar_table = {
       + Rw("SRA") / utils.node("sra")
       + Rw("PRINT") / utils.node("tosprint")
       + Rw("INPUT") / utils.node("sinput")
+      + Rw("FPUSH") * exp / utils.node("sfpush", "exp")
       + call
       + Rw("return") * exp / utils.node("ret", "exp"),
   lhs = lpeg.Ct(var * (T "[" * exp * T "]") ^ 0) / utils.foldIndex,
@@ -427,10 +428,21 @@ local function run(code, mem, stack, top, sapi)
     elseif code[pc] == "sprint" then
       print(sapi:getStack(current_stack):printData())
     elseif code[pc] == "tosprint" then
-      print(sapi:getStack(current_stack):peekLast())
+      local s = sapi:getStack(current_stack):peekLast()
+      if type(s) == "string" then
+        print(string.sub(s, 2, string.len(s) - 1))
+      else
+        print(s)
+      end
     elseif code[pc] == "sinput" then
       local ins = io.read()
       sapi:getStack(current_stack):push(ins)
+    elseif code[pc] == "sfpush" then
+      local fname = stack[top]:gsub('"', '')
+      local f = io.open(fname, "rb")
+      local data = f:read("*all")
+      f:close()
+      sapi:getStack(current_stack):push(data)
     elseif code[pc] == "suse" then
       current_stack = stack[top]:gsub('"', '')
       if DEBUG then

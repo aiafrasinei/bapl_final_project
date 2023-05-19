@@ -1,0 +1,8 @@
+function main_n () {
+    FPUSH "test/inputs/sapi/test.lua"
+    PUSH 1234
+    EVAL
+    PRINT
+    
+    return 0
+}

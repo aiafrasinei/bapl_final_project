@@ -248,6 +248,9 @@ function Compiler:codeStat(ast)
     self:addCode("tosprint")
   elseif ast.tag == "sinput" then
     self:addCode("sinput")
+  elseif ast.tag == "sfpush" then
+    self:codeExp(ast.exp)
+    self:addCode("sfpush")
   elseif ast.tag == "speek" then
     self:codeExp(ast.exp)
     self:addCode("speek")

@@ -125,3 +125,8 @@ setup() {
     run lua interpreter.lua test/inputs/sapi/sapi_to_var
     assert_output --partial "test"
 }
+
+@test "fpush" {
+    run lua interpreter.lua test/inputs/sapi/fpush
+    assert_output 4
+}

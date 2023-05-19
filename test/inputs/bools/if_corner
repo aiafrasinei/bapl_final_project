@@ -1,0 +1,9 @@
+function main_n () {
+    if 2 eq true {
+        @ true
+    } else {
+        @ false
+    }
+    
+    return 0
+}
