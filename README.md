@@ -126,7 +126,6 @@ Simple IO:
     SPRINT - print the content of the current stack
     INPUT  - read from stdin and put the value on the top of the current stack 
 
-
 Lua evaluation:
 
     EVAL - expects a valid lua code on the top of the current stack,
@@ -137,10 +136,11 @@ Lua evaluation:
 Accessing stack elements from variables:
 
     test_s = "$default'tos"
+    The variable will receive the data from the default stack (tos = top of stack)
+ 
     test_n = "$default'1"
-
-
-
+    Varibale will receive the data from default stack index 1
+    
 
 In this section, describe the new features or changes that you have added to the programming language. This should include:
 
@@ -164,6 +164,11 @@ Any trade-offs or limitations you are aware of
 
 - Type checks errors could use a better format.
 - I didnt add the optional initialization for last function parameter, i dont like that feature.
+- Strings dont have escape sequences and concatenation yet
+- Not enough error checking everywhere (more time needed)
+- Multidimensional array initialization is not included
+- I didnt have a clear vision of what this language will be (learning experience)
+- Bugs maybe
 
 Future
 

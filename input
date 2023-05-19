@@ -9,5 +9,7 @@ function factorial_n (nr_n) {
 function main_n () {
     input_n = 6
     test_n = factorial(input)
-    return test
+    @ test
+
+    return 0
 }
